@@ -1,0 +1,3 @@
+@extends('layout')
+@section('title','Zugangslink')
+@section('content')<section class="panel auth-card"><h1>{{ $link['type']==='invite' ? 'Einladung bereit' : 'Reset-Link bereit' }}</h1><p>Einmal verwendbar, 30 Minuten gültig.</p><img src="{{ $qr }}" alt="QR-Code für den Zugangslink" width="240" height="240"><label>Link zum Kopieren<input id="share-link" readonly value="{{ $link['url'] }}"></label><button type="button" id="copy-link">Link kopieren</button><p id="copy-status" role="status"></p><a class="button" href="{{ config('privatebar.mode')==='cloud' ? '/einstellungen/mitglieder' : '/einstellungen' }}">Zur Verwaltung</a></section>@endsection

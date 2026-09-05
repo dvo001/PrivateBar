@@ -1,0 +1,11 @@
+[Unit]
+Description=PrivateBar short background tasks
+After=network.target mariadb.service
+[Service]
+Type=oneshot
+User=privatebar
+WorkingDirectory=/srv/privatebar/current
+ExecStart=/usr/bin/php artisan privatebar:tick
+TimeoutStartSec=300
+NoNewPrivileges=true
+PrivateTmp=true

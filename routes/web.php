@@ -1,0 +1,67 @@
+<?php
+
+use App\Http\Controllers\AccessController;
+use App\Http\Controllers\BarController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\UpdateController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/anmelden', [AccessController::class, 'form'])->name('login');
+Route::post('/anmelden', [AccessController::class, 'login']);
+Route::post('/abmelden', [AccessController::class, 'logout']);
+Route::get('/zugang/{type}/{token}', [AccessController::class, 'linkForm'])->where('type', 'invite|reset');
+Route::post('/zugang/{type}/{token}', [AccessController::class, 'redeem'])->where('type', 'invite|reset')->middleware('throttle:10,1');
+Route::post('/wartung/entsperren', [AccessController::class, 'unlockMaintenance'])->middleware('local');
+Route::middleware('bar')->group(function () {
+    Route::get('/', [RecipeController::class, 'home'])->name('home');
+    Route::get('/machbar', [RecipeController::class, 'index'])->name('feasible');
+    Route::get('/entdecken', [RecipeController::class, 'index'])->name('discover');
+    Route::get('/favoriten', [RecipeController::class, 'index'])->name('favorites');
+    Route::post('/zufall', [RecipeController::class, 'random']);
+    Route::get('/rezepte/neu', [RecipeController::class, 'form']);
+    Route::post('/rezepte', [RecipeController::class, 'save']);
+    Route::get('/rezepte/{id}', [RecipeController::class, 'show'])->whereUuid('id');
+    Route::get('/rezepte/{id}/bearbeiten', [RecipeController::class, 'form'])->whereUuid('id');
+    Route::post('/rezepte/{id}/bearbeiten', [RecipeController::class, 'save'])->whereUuid('id');
+    Route::post('/rezepte/{id}/favorit', [RecipeController::class, 'favorite'])->whereUuid('id');
+    Route::post('/rezepte/{id}/bewertung', [RecipeController::class, 'rate'])->whereUuid('id');
+    Route::post('/rezepte/{id}/sichtbarkeit', [RecipeController::class, 'hide'])->whereUuid('id');
+    Route::post('/rezepte/{id}/uebersetzung', [RecipeController::class, 'translation'])->whereUuid('id');
+    Route::get('/meine-bar', [BarController::class, 'index'])->name('bar');
+    Route::get('/meine-bar/neu', [BarController::class, 'form']);
+    Route::get('/scannen', [BarController::class, 'scanner']);
+    Route::post('/scannen', [BarController::class, 'lookup']);
+    Route::post('/meine-bar', [BarController::class, 'save']);
+    Route::post('/meine-bar/{id}/entfernen', [BarController::class, 'remove'])->whereUuid('id');
+    Route::get('/einkaufsliste', [BarController::class, 'shopping'])->name('shopping');
+    Route::post('/einkaufsliste', [BarController::class, 'addShopping']);
+    Route::post('/einkaufsliste/{id}/gekauft', [BarController::class, 'purchase'])->whereUuid('id');
+    Route::post('/einkaufsliste/{id}/entfernen', [BarController::class, 'removeShopping'])->whereUuid('id');
+    Route::get('/einstellungen/zutaten', [SettingsController::class, 'ingredients']);
+    Route::post('/einstellungen/zutaten/{id}', [SettingsController::class, 'ingredient'])->whereUuid('id');
+    Route::get('/einstellungen', [SettingsController::class, 'index'])->name('settings');
+    Route::post('/einstellungen/gemeinsam', [SettingsController::class, 'shared']);
+    Route::post('/einstellungen/ersatz', [SettingsController::class, 'substitution']);
+    Route::post('/einstellungen/synchronisieren', [SettingsController::class, 'sync']);
+    Route::get('/einstellungen/mitglieder', [MemberController::class, 'index']);
+    Route::post('/einstellungen/mitglieder/link', [MemberController::class, 'issue']);
+    Route::post('/einstellungen/einladungen/{id}/widerrufen', [MemberController::class, 'revoke']);
+    Route::post('/einstellungen/mitglieder/{id}/entfernen', [MemberController::class, 'remove']);
+    Route::post('/einstellungen/mitglieder/{id}/sitzungen', [MemberController::class, 'sessions']);
+    Route::middleware('local')->group(function () {
+        Route::post('/einstellungen/wiederherstellung', [SettingsController::class, 'recovery']);
+        Route::get('/einstellungen/lokal', [SettingsController::class, 'localForm']);
+        Route::post('/einstellungen/lokal/oeffnen', [SettingsController::class, 'local']);
+        Route::post('/einstellungen/lokal', [SettingsController::class, 'saveLocal']);
+        Route::post('/einstellungen/smb-test', [SettingsController::class, 'testSmb']);
+        Route::post('/einstellungen/wartung', [SettingsController::class, 'maintenance']);
+        Route::post('/einstellungen/update/pruefen', [UpdateController::class, 'check']);
+        Route::post('/einstellungen/update/installieren', [UpdateController::class, 'install']);
+    });
+    Route::get('/fotorahmen/naechstes', [PhotoController::class, 'next']);
+    Route::get('/fotorahmen/bild/{id}', [PhotoController::class, 'image'])->where('id', '[a-f0-9]{64}');
+    Route::get('/medien/{folder}/{file}', [PhotoController::class, 'media']);
+});

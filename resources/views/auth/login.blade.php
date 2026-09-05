@@ -1,0 +1,4 @@
+@extends('layout')
+@section('title','Willkommen')
+@section('content')<div class="auth-layout"><img class="auth-art" src="/assets/riviera.svg" alt="Mediterrane Bar mit Meerblick" width="600" height="600"><section class="panel auth-card"><p class="eyebrow">SCHÖN, DASS DU DA BIST</p><h1>Willkommen<br>in deiner Bar.</h1><form method="post" action="/anmelden" class="form-stack">@csrf
+@if(config('privatebar.mode')==='pi')<label>Sechsstellige Kiosk-PIN<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="off" required autofocus></label>@else<label>E-Mail-Adresse<input name="email" type="email" required autocomplete="username" value="{{ old('email') }}"></label><label>Passwort<input name="password" type="password" required autocomplete="current-password"></label>@endif<button class="primary">Bar öffnen <span aria-hidden="true">↗</span></button></form></section></div>@endsection

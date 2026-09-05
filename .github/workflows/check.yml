@@ -1,0 +1,48 @@
+name: PrivateBar checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: testing-only
+          MARIADB_DATABASE: privatebar_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, xml, curl, gd, pdo_mysql, pdo_sqlite, bcmath, zip
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: php tools/build.php
+      - run: composer check
+      - name: MariaDB integration
+        run: php vendor/bin/phpunit --fail-on-risky --fail-on-warning
+        env:
+          DB_CONNECTION: mariadb
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: privatebar_test
+          DB_USERNAME: root
+          DB_PASSWORD: testing-only
+      - name: Production cache checks
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+# This workflow verifies only. A push or merge never deploys.

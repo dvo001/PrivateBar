@@ -1,0 +1,11 @@
+[Unit]
+Description=Prepare PrivateBar synchronisation and photo index after boot
+After=mariadb.service
+Before=privatebar-tick.service
+[Service]
+Type=oneshot
+User=privatebar
+WorkingDirectory=/srv/privatebar/current
+ExecStart=/usr/bin/php artisan privatebar:boot
+[Install]
+WantedBy=multi-user.target

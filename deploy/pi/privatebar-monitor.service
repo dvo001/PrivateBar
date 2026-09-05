@@ -1,0 +1,12 @@
+[Unit]
+Description=PrivateBar touchscreen monitor wake
+After=graphical-session.target
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/privatebar/monitor.env
+ExecStart=/usr/bin/python3 /usr/local/lib/privatebar/monitor.py
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+[Install]
+WantedBy=default.target

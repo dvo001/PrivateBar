@@ -1,0 +1,88 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "privatebar/privatebar",
+    "type": "project",
+    "description": "Private Hausbar für Raspberry Pi und Cyon",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "proprietary",
+    "require": {
+        "bacon/bacon-qr-code": "^3.0",
+        "ext-gd": "*",
+        "ext-pdo_mysql": "*",
+        "laravel/framework": "^13.17",
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23",
+        "laravel/pint": "^1.27",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "phpunit/phpunit": "^12.5.12",
+        "phpstan/phpstan": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "setup": [
+            "composer install",
+            "@php tools/setup.php",
+            "@php artisan migrate --seed",
+            "@php tools/build.php"
+        ],
+        "dev": "@php artisan serve",
+        "test": [
+            "@php artisan config:clear --ansi @no_additional_args",
+            "@php artisan test"
+        ],
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "pre-package-uninstall": [
+            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "check": [
+            "@php vendor/bin/pint --test",
+            "@php vendor/bin/phpstan analyse --memory-limit=512M",
+            "@php vendor/bin/phpunit --fail-on-risky --fail-on-warning"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.30"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

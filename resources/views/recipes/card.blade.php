@@ -1,0 +1,4 @@
+<article class="recipe-card"><a href="/rezepte/{{ $recipe->id }}">
+<div class="card-image"><img src="{{ $recipe->image_path ? '/medien/'.$recipe->image_path : '/assets/drink.svg' }}" alt="{{ $recipe->image_path ? $recipe->name : '' }}" loading="lazy" width="400" height="320">
+@if($recipe->imported_at && \Illuminate\Support\Carbon::parse($recipe->imported_at)->gt(now()->subDays(14)))<span class="new">Neu</span>@endif</div>
+<div class="card-copy"><span class="badge rank-{{ $recipe->feasibility['rank'] }}">{{ $recipe->feasibility['label'] }}</span><h3>{{ $recipe->name }}</h3><div class="card-meta"><span>{{ $recipe->alcoholic ? ($recipe->base_spirit ?: 'Alkoholisch') : 'Alkoholfrei' }}{{ $recipe->taste ? ' · '.$recipe->taste : '' }}</span><span>{{ $recipe->rating !== null ? number_format((float)$recipe->rating,1,'.',"'").' ★' : '—' }}</span></div></div></a></article>

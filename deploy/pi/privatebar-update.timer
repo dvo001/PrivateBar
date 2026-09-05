@@ -1,0 +1,7 @@
+[Unit]
+Description=Check for a locally requested PrivateBar update
+[Timer]
+OnBootSec=120s
+OnUnitActiveSec=60s
+[Install]
+WantedBy=timers.target

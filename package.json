@@ -1,0 +1,11 @@
+{
+  "name": "privatebar-browser-checks",
+  "private": true,
+  "scripts": {
+    "test:browser": "node tests/Browser/check.cjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "playwright": "1.63.0"
+  }
+}

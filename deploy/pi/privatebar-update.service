@@ -1,0 +1,10 @@
+[Unit]
+Description=Install a signed PrivateBar release requested locally
+After=mariadb.service
+[Service]
+Type=oneshot
+User=privatebar
+WorkingDirectory=/srv/privatebar/current
+ExecStart=/usr/bin/php artisan privatebar:install-update
+TimeoutStartSec=600
+NoNewPrivileges=true

@@ -1,0 +1,7 @@
+{
+  "version": "0.1.0",
+  "pi_verified": false,
+  "cyon_verified": false,
+  "backward_compatible_migrations": false,
+  "note": "Vor Release anhand Docu/DEPLOYMENT.md auf beiden Zielsystemen prüfen."
+}

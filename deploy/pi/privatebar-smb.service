@@ -1,0 +1,8 @@
+[Unit]
+Description=Mount the private read-only SMB photo source
+After=network-online.target mariadb.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/lib/privatebar/smb-mount.py
+TimeoutStartSec=90
+UMask=0077
