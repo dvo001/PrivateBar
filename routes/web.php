@@ -38,6 +38,8 @@ Route::middleware('bar')->group(function () {
     Route::post('/rezepte/{id}/uebersetzung', [RecipeController::class, 'translation'])->whereUuid('id');
     Route::get('/meine-bar', [BarController::class, 'index'])->name('bar');
     Route::get('/meine-bar/neu', [BarController::class, 'form']);
+    Route::get('/meine-bar/{id}/bearbeiten', [BarController::class, 'edit'])->whereUuid('id');
+    Route::post('/meine-bar/{id}/bearbeiten', [BarController::class, 'save'])->whereUuid('id');
     Route::get('/scannen', [BarController::class, 'scanner']);
     Route::post('/scannen', [BarController::class, 'lookup']);
     Route::post('/meine-bar', [BarController::class, 'save']);
@@ -47,6 +49,7 @@ Route::middleware('bar')->group(function () {
     Route::post('/einkaufsliste/{id}/gekauft', [BarController::class, 'purchase'])->whereUuid('id');
     Route::post('/einkaufsliste/{id}/entfernen', [BarController::class, 'removeShopping'])->whereUuid('id');
     Route::get('/einstellungen/zutaten', [SettingsController::class, 'ingredients']);
+    Route::post('/einstellungen/zutaten', [SettingsController::class, 'createIngredient']);
     Route::post('/einstellungen/zutaten/{id}', [SettingsController::class, 'ingredient'])->whereUuid('id');
     Route::get('/einstellungen', [SettingsController::class, 'index'])->name('settings');
     Route::post('/einstellungen/gemeinsam', [SettingsController::class, 'shared']);

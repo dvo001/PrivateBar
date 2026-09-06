@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Recipes\IngredientCatalog;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
                 DB::table('ingredient_synonyms')->insertOrIgnore(['name' => $synonym, 'ingredient_id' => $id]);
             }
         }
+        app(IngredientCatalog::class)->install(false);
         foreach ([['Zitronensaft', 'Limettensaft'], ['Limettensaft', 'Zitronensaft'], ['Weisser Rum', 'Dunkler Rum']] as [$required,$replacement]) {
             DB::table('ingredient_substitutions')->insertOrIgnore(['id' => self::id($required.'>'.$replacement), 'required_id' => self::id($required), 'replacement_id' => self::id($replacement), 'enabled' => true, 'created_at' => now(), 'updated_at' => now()]);
         }

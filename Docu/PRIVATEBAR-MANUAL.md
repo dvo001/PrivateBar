@@ -484,3 +484,30 @@ Version 1 enthält ausdrücklich keine:
 - Zwei-Faktor-Anmeldung.
 
 Für Version 2 vorgemerkt sind die installierbare Smartphone-Web-App, Einkaufsnotizen und ein gross dargestellter Schritt-für-Schritt-Zubereitungsmodus.
+
+## Zutaten und Bereiche ab Version 1.0.2
+
+Beim Flaschenscan und unter «Manuell hinzufügen» lässt sich die Zutatenwahl
+über «Bereich» und «Zutat suchen» eingrenzen. Ohne JavaScript bleibt die
+vollständige gruppierte Auswahl verfügbar.
+
+Fehlt noch die genaue Zuordnung, wähle einen Eintrag wie «Liköre – noch nicht
+zugeordnet». Die Flasche wird gespeichert, erfüllt aber noch keine bestimmte
+Zutat eines Rezepts. Unter «Meine Bar» → «Flasche bearbeiten» kannst du später
+Produktname, Marke, Alkoholgehalt und Cocktailzutat korrigieren. Der Barcode
+bleibt dabei erhalten. Ein erneuter Scan bietet ebenfalls den Link zum Bearbeiten.
+
+Unter «Einstellungen» → «Cocktailzutaten & Synonyme» kannst du nach Name oder
+Synonym suchen, nach Bereich filtern und «Neue Cocktailzutat ergänzen» öffnen.
+Klappe eine vorhandene Zutat auf, um ihren Namen, Bereich und die vollständige
+Synonymliste zu bearbeiten. Synonyme stehen mit Komma getrennt im Textfeld;
+entferne dort nicht mehr gewünschte Namen. Beim Umbenennen bleibt der bisherige
+Name als Synonym erhalten. Ein Name darf nur einer Zutat gehören. Änderungen
+werden zwischen Cyon und Pi synchronisiert.
+
+Die Grundliste enthält 134 konkrete Zutaten und 14 allgemeine Bereichseinträge.
+Nur Wasser, Eis, Zucker und Salz gelten bei einer Neuinstallation automatisch
+als vorhanden. Milch, Rahm, Honig und andere Küchenzutaten müssen wie die übrigen
+Zutaten ausdrücklich im Bestand sein. Bestehende private Einstellungen bleiben
+erhalten. Ginger Beer/Ginger Ale, Kokosmilch/Cream of Coconut sowie Liköre und
+Sirupe werden getrennt behandelt.

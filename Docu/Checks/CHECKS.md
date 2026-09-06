@@ -71,3 +71,39 @@ Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md)
   einer isolierten SQLite-Testdatenbank, optimize, health und die neuen gecachten
   Verifizierungsrouten erfolgreich. Keine neue Schemamigration erforderlich.
 - SMTP-Zustellung auf Cyon und Zielgeräteabnahme bleiben ausstehend.
+
+## Amaretto-Korrektur und Zutatenprüfung
+
+- 58 PHP-Tests mit 267 Assertions erfolgreich auf SQLite.
+- Drei neue Tests prüfen den gezielten Seeder-Aufruf samt Wiederholung und
+  Sync-Ereignis, den Erhalt importierter IDs und privater Korrekturen sowie
+  den Disaronno-Scan bis zur bestätigten Speicherung mit 28 % vol.
+- PHPStan Level 5 erfolgreich; keine Frontend- oder Schemaänderung.
+- Zutatenabgleich mit OpenDrinks und der verfügbaren TheCocktailDB-Liste:
+  Vorgehen, Quellen und Grenzen in [ZUTATEN-CHECK.md](../ZUTATEN-CHECK.md).
+- Die Datenkorrektur wurde nicht auf Cyon ausgeführt. Ein neuer MariaDB- oder
+  Hardwareprüflauf ist für diese Ergänzung noch nicht dokumentiert.
+
+## Version 1.0.2: Zutatenkatalog, Bereiche und Bearbeitung
+
+- 65 PHP-Tests mit 743 Assertions erfolgreich auf SQLite und auf einer isolierten
+  MariaDB 10.6.23, PHP 8.3.30. Der MariaDB-Testserver lief nur über einen lokalen
+  Unix-Socket und verwendete eine eigene Testdatenbank.
+- PHPStan Level 5 und Laravel Pint erfolgreich.
+- Chromium/Playwright/axe: bisherige 21 Ansichten sowie sechs zusätzliche
+  Ansichten für Flaschenformular und Zutatenverwaltung bei 1920, 390 und 320
+  Pixeln ohne Überlauf, JavaScriptfehler oder erkannte WCAG-Verstösse.
+- Schreibender Browserablauf: Bereich eingrenzen, Vorschlag ausfiltern,
+  allgemeine Flasche speichern, konkret als Amaretto bearbeiten, eigene Zutat
+  anlegen, umbenennen und ein Synonym entfernen. Gruppierte Auswahl auch ohne
+  JavaScript geprüft. Testskript: `tests/Browser/ingredients.cjs`.
+- Alte Import-IDs, Bestandszuordnungen und Rezeptbezüge bleiben erhalten.
+  Tests prüfen Aliasauflösung für Machbarkeit, Alkohol und Einkauf,
+  idempotente Katalogergänzung, private Korrekturen, getrennte Sirup-/Spirituosen-
+  Vorschläge sowie vollständige und ältere partielle Sync-Payloads.
+- Keine echte Cyon-Bereitstellung, Smartphonekamera oder Pi-Hardwareabnahme
+  durchgeführt; die Freigabefelder bleiben auf false.
+- Isoliertes Update vom bisherigen Produktionspaket samt 1.0.1-Mailpatch:
+  Katalog von 27 auf 148 Einträge ergänzt, Wiederholung mit 0 Änderungen,
+  Produktionscaches, neue Routen und Healthcheck erfolgreich. Bestehende
+  Produktionsbibliotheken laden alle neuen Klassen ohne Composer-Neuinstallation.

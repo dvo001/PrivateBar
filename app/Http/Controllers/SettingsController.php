@@ -150,9 +150,30 @@ final class SettingsController
         return view('settings.link', ['link' => $link, 'qr' => 'data:image/svg+xml;base64,'.base64_encode($qr)]);
     }
 
-    public function ingredients()
+    public function ingredients(Request $request)
     {
-        return view('settings.ingredients', ['ingredients' => DB::table('ingredients')->orderBy('name')->paginate(30), 'categories' => DB::table('ingredient_categories')->orderBy('name')->get()]);
+        $filters = $request->validate(['q' => 'nullable|string|max:255', 'category' => 'nullable|exists:ingredient_categories,id']);
+        $query = DB::table('ingredients')->orderBy('name');
+        if ($filters['category'] ?? null) {
+            $query->where('category_id', $filters['category']);
+        }
+        if ($filters['q'] ?? null) {
+            $q = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $filters['q']).'%';
+            $query->where(fn ($query) => $query->whereRaw("name LIKE ? ESCAPE '!'", [$q])->orWhereIn('id', DB::table('ingredient_synonyms')->select('ingredient_id')->whereRaw("name LIKE ? ESCAPE '!'", [$q])));
+        }
+
+        $ingredients = $query->paginate(30)->withQueryString();
+        $synonyms = DB::table('ingredient_synonyms')->whereIn('ingredient_id', $ingredients->pluck('id'))->orderBy('name')->get()->groupBy('ingredient_id');
+
+        return view('settings.ingredients', ['ingredients' => $ingredients, 'synonyms' => $synonyms, 'categories' => DB::table('ingredient_categories')->orderBy('name')->get()]);
+    }
+
+    public function createIngredient(Request $request, IngredientGlossary $glossary)
+    {
+        $data = $request->validate(['name' => 'required|string|max:255', 'category_id' => 'required|exists:ingredient_categories,id', 'synonyms' => 'nullable|string|max:1000']);
+        $glossary->create($data);
+
+        return redirect('/einstellungen/zutaten?q='.rawurlencode($data['name']))->with('message', 'Cocktailzutat ergänzt. Sie kann jetzt einer Flasche zugeordnet werden.');
     }
 
     public function ingredient(Request $request, string $id, IngredientGlossary $glossary)

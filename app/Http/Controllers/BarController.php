@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Bar\Inventory;
 use App\Domain\Bar\ShoppingList;
 use App\Domain\Photos\ImageProcessor;
+use App\Domain\Recipes\IngredientCatalog;
 use App\Infrastructure\Providers\ProductProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,12 +20,21 @@ final class BarController
 
     public function form()
     {
-        return view('bar.form', ['product' => [], 'ingredients' => DB::table('ingredients')->orderBy('name')->get(), 'present' => false, 'scanning' => false]);
+        return view('bar.form', ['product' => [], 'ingredients' => app(IngredientCatalog::class)->choices(), 'present' => false, 'scanning' => false]);
     }
 
     public function scanner()
     {
         return view('bar.scan');
+    }
+
+    public function edit(string $id, Inventory $inventory)
+    {
+        abort_unless(DB::table('products')->where('id', $id)->exists(), 404);
+        $product = $inventory->snapshot($id);
+        $product['ingredient_id'] = app(IngredientCatalog::class)->identities()[$product['ingredient_id']] ?? $product['ingredient_id'];
+
+        return view('bar.form', ['product' => $product, 'ingredients' => app(IngredientCatalog::class)->choices(), 'present' => false, 'scanning' => true, 'editing' => true]);
     }
 
     public function lookup(Request $request, ProductProvider $provider, Inventory $inventory, ImageProcessor $images)
@@ -56,33 +66,63 @@ final class BarController
         }
         $request->session()->put('barcode_confirmation', ['barcode' => $barcode, 'source' => $product['source'] ?? null, 'license' => $product['license'] ?? null, 'image_path' => $product['image_path'] ?? null]);
 
-        return view('bar.form', ['product' => $product, 'ingredients' => DB::table('ingredients')->orderBy('name')->get(), 'present' => $existing && DB::table('bar_inventory')->where('product_id', $existing->id)->exists(), 'scanning' => true, 'lookupMessage' => $message]);
+        $product['ingredient_id'] = app(IngredientCatalog::class)->identities()[$product['ingredient_id'] ?? ''] ?? ($product['ingredient_id'] ?? null);
+
+        return view('bar.form', ['product' => $product, 'ingredients' => app(IngredientCatalog::class)->choices(), 'present' => $existing && DB::table('bar_inventory')->where('product_id', $existing->id)->exists(), 'scanning' => true, 'lookupMessage' => $message]);
     }
 
     private function suggest(array $product): ?string
     {
-        $text = mb_strtolower(($product['name'] ?? '').' '.implode(' ', $product['categories'] ?? []));
-        $synonyms = DB::table('ingredient_synonyms')->orderByRaw('LENGTH(name) DESC')->get();
-        foreach ($synonyms as $synonym) {
-            if (mb_strlen($synonym->name) > 2 && preg_match('/(?<![\pL])'.preg_quote($synonym->name, '/').'(?![\pL])/u', $text)) {
-                return $synonym->ingredient_id;
+        // Produktnamen haben Vorrang vor einer Marke mit mehreren unterschiedlichen Produkten.
+        $texts = [mb_strtolower($product['name'] ?? ''), mb_strtolower($product['brand'] ?? '')];
+        $categoryNames = ['en:bourbon-whiskeys' => 'bourbon', 'en:scotch-whiskies' => 'scotch',
+            'en:whiskies' => 'whisky', 'en:whiskeys' => 'whisky', 'en:gins' => 'gin', 'en:vodkas' => 'vodka',
+            'en:tequilas' => 'tequila', 'en:white-rums' => 'white rum', 'en:dark-rums' => 'dark rum'];
+        foreach ($categoryNames as $tag => $name) {
+            if (in_array($tag, $product['categories'] ?? [], true)) {
+                $texts[] = $name;
+            }
+        }
+        $nonAlcoholic = preg_match('/alkoholfrei|non.alcoholic|alcohol.free|0[.,]0/u', $texts[0])
+            || (isset($product['abv']) && (float) $product['abv'] === 0.0);
+        $syrup = preg_match('/syrup|sirup/u', $texts[0]);
+        $synonyms = DB::table('ingredient_synonyms')->join('ingredients', 'ingredient_id', '=', 'ingredients.id')
+            ->select('ingredient_synonyms.*', 'category_id')->orderByRaw('LENGTH(ingredient_synonyms.name) DESC')->get();
+        foreach ($texts as $text) {
+            foreach ($synonyms as $synonym) {
+                if ($syrup && $synonym->category_id !== 'syrup') {
+                    continue;
+                }
+                if ($nonAlcoholic && ! in_array($synonym->category_id, ['soft', 'juice', 'syrup', 'basic', 'garnish'], true)) {
+                    continue;
+                }
+                if (mb_strlen($synonym->name) > 2 && preg_match('/(?<![\pL])'.preg_quote($synonym->name, '/').'(?![\pL])/u', $text)) {
+                    return $synonym->ingredient_id;
+                }
             }
         }
 
         return null;
     }
 
-    public function save(Request $request, Inventory $inventory)
+    public function save(Request $request, Inventory $inventory, ?string $id = null)
     {
         $data = $request->validate(['name' => 'required|string|max:255', 'brand' => 'nullable|string|max:255', 'barcode' => 'nullable|regex:/^[0-9]{8,14}$/D', 'abv' => 'nullable|numeric|between:0,100', 'ingredient_id' => 'required|uuid|exists:ingredients,id', 'confirmed' => 'accepted']);
         $confirmation = $request->session()->get('barcode_confirmation', []);
+        if ($id !== null) {
+            $existing = DB::table('products')->where('id', $id)->first();
+            abort_unless($existing !== null, 404);
+            abort_unless(($existing->barcode ?? '') === ($data['barcode'] ?? ''), 422);
+            $data['id'] = $id;
+            $confirmation = (array) $existing;
+        }
         if (($confirmation['barcode'] ?? null) === ($data['barcode'] ?? null)) {
             $data += array_intersect_key($confirmation, array_flip(['source', 'license', 'image_path']));
         }
         $inventory->save($data);
         $request->session()->forget('barcode_confirmation');
 
-        return redirect('/meine-bar')->with('message', 'Flasche zum Barbestand hinzugefügt.');
+        return redirect('/meine-bar')->with('message', $id ? 'Flasche und Zuordnung gespeichert.' : 'Flasche zum Barbestand hinzugefügt.');
     }
 
     public function remove(Request $request, string $id, Inventory $inventory)

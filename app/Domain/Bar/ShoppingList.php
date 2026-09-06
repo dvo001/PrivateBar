@@ -2,6 +2,7 @@
 
 namespace App\Domain\Bar;
 
+use App\Domain\Recipes\IngredientCatalog;
 use App\Domain\Settings\Settings;
 use App\Domain\Sync\Journal;
 use Illuminate\Support\Facades\DB;
@@ -15,8 +16,13 @@ final class ShoppingList
         $this->settings->assertRunning();
         DB::transaction(function () use ($ids) {
             $this->settings->assertRunning();
-            foreach (array_unique($ids) as $id) {
-                abort_unless(DB::table('recipe_ingredients')->where('ingredient_id', $id)->exists(), 422, 'Nur bekannte Rezeptzutaten können auf die Einkaufsliste.');
+            $map = app(IngredientCatalog::class)->identities();
+            foreach (array_unique(array_map(fn ($id) => $map[$id] ?? $id, $ids)) as $id) {
+                $equivalents = array_keys($map, $id, true);
+                abort_unless(DB::table('recipe_ingredients')->whereIn('ingredient_id', $equivalents)->exists(), 422, 'Nur bekannte Rezeptzutaten können auf die Einkaufsliste.');
+                if (DB::table('shopping_list_items')->whereIn('ingredient_id', $equivalents)->exists()) {
+                    continue;
+                }
                 if (DB::table('shopping_list_items')->insertOrIgnore(['ingredient_id' => $id, 'created_at' => now()])) {
                     $this->journal->record('shopping', $id, []);
                 }
@@ -29,8 +35,11 @@ final class ShoppingList
         $this->settings->assertRunning();
         DB::transaction(function () use ($id) {
             $this->settings->assertRunning();
-            DB::table('shopping_list_items')->where('ingredient_id', $id)->delete();
-            $this->journal->record('shopping', $id, [], true);
+            $map = app(IngredientCatalog::class)->identities();
+            foreach (array_unique([$id, ...array_keys($map, $map[$id] ?? $id, true)]) as $equivalent) {
+                DB::table('shopping_list_items')->where('ingredient_id', $equivalent)->delete();
+                $this->journal->record('shopping', $equivalent, [], true);
+            }
         });
     }
 

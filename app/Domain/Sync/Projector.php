@@ -86,9 +86,13 @@ final class Projector
                 }
                 break;
             case 'ingredient':
+                $replaceSynonyms = array_key_exists('synonyms', $p);
                 $synonyms = $p['synonyms'] ?? [];
                 unset($p['synonyms']);
                 DB::table('ingredients')->updateOrInsert(['id' => $id], $p + ['created_at' => $now, 'updated_at' => $now]);
+                if ($replaceSynonyms) {
+                    DB::table('ingredient_synonyms')->where('ingredient_id', $id)->whereNotIn('name', $synonyms)->delete();
+                }
                 foreach ($synonyms as $synonym) {
                     DB::table('ingredient_synonyms')->updateOrInsert(['name' => $synonym], ['ingredient_id' => $id]);
                 }

@@ -1,4 +1,31 @@
 'use strict';
+document.querySelectorAll('[data-ingredient-picker]').forEach(picker => {
+    const select = picker.querySelector('[data-ingredient-select]');
+    const category = picker.querySelector('[data-ingredient-category]');
+    const search = picker.querySelector('[data-ingredient-search]');
+    const groups = [...select.querySelectorAll('optgroup')].map(group => group.cloneNode(true));
+    picker.querySelector('[data-ingredient-filters]').hidden = false;
+    const normalize = value => value.toLocaleLowerCase('de-CH').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const filter = () => {
+        const selected = select.value;
+        select.replaceChildren(new Option('Zuordnung wählen', ''));
+        let count = 0;
+        for (const original of groups) {
+            if (category.value && category.value !== original.label) continue;
+            const group = original.cloneNode(true);
+            [...group.children].forEach(option => {
+                if (!normalize(option.textContent).includes(normalize(search.value.trim()))) option.remove();
+                else { option.selected = option.value === selected; count++; }
+            });
+            if (group.children.length) select.append(group);
+        }
+        // Ein ausgefilterter Vorschlag darf nicht unbemerkt durch die erste Zutat ersetzt werden.
+        if (![...select.options].some(option => option.value === selected)) select.value = '';
+        picker.querySelector('[data-ingredient-results]').textContent = count ? `${count} Zutaten zur Auswahl.` : 'Keine passende Zutat. Suche ändern oder eine neue Zutat ergänzen.';
+    };
+    category.addEventListener('change', filter);
+    search.addEventListener('input', filter);
+});
 const navToggle = document.querySelector('#nav-toggle');
 navToggle?.addEventListener('click', () => {
     const nav = document.querySelector('#mobile-nav');

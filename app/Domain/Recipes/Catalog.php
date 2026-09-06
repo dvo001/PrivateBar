@@ -20,22 +20,35 @@ final class Catalog
         $products = DB::table('bar_inventory')->join('products', 'bar_inventory.product_id', '=', 'products.id')
             ->join('product_ingredient_mappings', 'products.id', '=', 'product_ingredient_mappings.product_id')
             ->orderBy('products.id')->get(['ingredient_id', 'abv']);
-        $available = $ingredients->where('automatic', true)->pluck('id')->merge($products->pluck('ingredient_id'))->unique()->all();
-        $substitutions = DB::table('ingredient_substitutions')->where('enabled', true)->orderBy('replacement_id')->get()->groupBy('required_id')->map(fn ($rows) => $rows->pluck('replacement_id')->all())->all();
+        $identities = app(IngredientCatalog::class)->identities();
+        $canonical = fn ($id) => $identities[$id] ?? $id;
+        $available = $ingredients->where('automatic', true)->pluck('id')->merge($products->pluck('ingredient_id'))->map($canonical)->unique()->all();
+        $substitutions = [];
+        foreach (DB::table('ingredient_substitutions')->where('enabled', true)->orderBy('replacement_id')->get() as $rule) {
+            $substitutions[$canonical($rule->required_id)][] = $canonical($rule->replacement_id);
+        }
         $abv = [];
         // Bei mehreren Flaschen deterministisch das erste Produkt mit bekanntem Wert.
         foreach ($products as $p) {
-            if ($p->abv !== null && ! isset($abv[$p->ingredient_id])) {
-                $abv[$p->ingredient_id] = (float) $p->abv;
+            $id = $canonical($p->ingredient_id);
+            if ($p->abv !== null && ! isset($abv[$id])) {
+                $abv[$id] = (float) $p->abv;
             }
         }
 
-        return $this->context = ['available' => $available, 'substitutions' => $substitutions, 'abv' => $abv, 'fallback' => $ingredients->pluck('typical_abv', 'id')->all(), 'names' => $ingredients->pluck('name', 'id')->all()];
+        return $this->context = ['available' => $available, 'substitutions' => $substitutions, 'abv' => $abv, 'fallback' => $ingredients->pluck('typical_abv', 'id')->all(), 'names' => $ingredients->pluck('name', 'id')->all(), 'identities' => $identities];
     }
 
     public function decorate(object $recipe, array $lines): object
     {
         $context = $this->context();
+        foreach ($lines as &$line) {
+            $line['ingredient_id'] = $context['identities'][$line['ingredient_id']] ?? $line['ingredient_id'];
+            if (array_key_exists('name', $line)) {
+                $line['name'] = $context['names'][$line['ingredient_id']] ?? $line['name'];
+            }
+        }
+        unset($line);
         $recipe->feasibility = (new Feasibility)->evaluate($lines, $context['available'], $context['substitutions']);
         $recipe->abv = (new Alcohol)->estimate($recipe->feasibility['lines'], $context['abv'], $context['fallback']);
 

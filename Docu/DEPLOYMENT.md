@@ -224,7 +224,7 @@ Cyon-Anleitungen: [Dateimanager](https://www.cyon.ch/support/a/bedienung-vom-dat
 
 ## Raspberry Pi
 
-Für das vorbereitete Paket `artifacts/privatebar-1.0.0-pi-installation.tar.gz`
+Für das vorbereitete Paket `artifacts/privatebar-1.0.2-pi-installation.tar.gz`
 steht der Erstaufbau in [INSTALLATION-PI.md](INSTALLATION-PI.md). Bibliotheken
 und Frontend sind darin enthalten; Composer-Installation und Frontend-Build
 entfallen bei Verwendung dieses Pakets. Es ist kein signiertes Pi-Update.
@@ -388,3 +388,9 @@ Sicherungspunkte; Verfügbarkeit und Zustand eines Hosting-Backups vorab prüfen
 
 Diesen Ablauf zunächst mit Testdaten erproben. Er wurde noch nicht gegen ein echtes
 Cyon-Hosting-Backup und eine physische Pi-Instanz abgenommen.
+
+## Zutatenupdate 1.0.2
+
+Die aktuelle Anleitung für Cyon ohne SSH und den anschliessenden Pi-Wechsel steht
+in [UPDATE-1.0.2.md](UPDATE-1.0.2.md). Der gezielte IngredientCatalogSeeder ergänzt
+fehlende Zutaten und Synonyme ohne erneute Erstinstallation.

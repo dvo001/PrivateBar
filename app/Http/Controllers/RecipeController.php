@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Photos\ImageProcessor;
 use App\Domain\Recipes\Catalog;
+use App\Domain\Recipes\IngredientCatalog;
 use App\Domain\Recipes\RandomRecipe;
 use App\Domain\Recipes\RecipeWriter;
 use App\Domain\Sync\Journal;
@@ -49,7 +50,15 @@ final class RecipeController
 
     public function form(?string $id = null)
     {
-        return view('recipes.form', ['recipe' => $id ? DB::table('recipes')->where('id', $id)->firstOrFail() : null, 'lines' => $id ? DB::table('recipe_ingredients')->where('recipe_id', $id)->orderBy('position')->get()->map(fn ($l) => (array) $l)->all() : [], 'ingredients' => DB::table('ingredients')->orderBy('name')->get()]);
+        $catalog = app(IngredientCatalog::class);
+        $map = $catalog->identities();
+        $lines = $id ? DB::table('recipe_ingredients')->where('recipe_id', $id)->orderBy('position')->get()->map(function ($line) use ($map) {
+            $line->ingredient_id = $map[$line->ingredient_id] ?? $line->ingredient_id;
+
+            return (array) $line;
+        })->all() : [];
+
+        return view('recipes.form', ['recipe' => $id ? DB::table('recipes')->where('id', $id)->firstOrFail() : null, 'lines' => $lines, 'ingredients' => $catalog->choices()]);
     }
 
     public function save(Request $request, RecipeWriter $writer, ImageProcessor $images, ?string $id = null)

@@ -64,7 +64,7 @@ final class Importer
 
     public function ingredient(string $name): string
     {
-        $key = Str::lower(trim($name));
+        $key = IngredientCatalog::key($name);
         $existing = DB::table('ingredient_synonyms')->where('name', $key)->value('ingredient_id') ?? DB::table('ingredients')->whereRaw('LOWER(name) = ?', [$key])->value('id');
         if ($existing) {
             return $existing;

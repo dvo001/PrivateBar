@@ -2,6 +2,7 @@
 
 namespace App\Domain\Bar;
 
+use App\Domain\Recipes\IngredientCatalog;
 use App\Domain\Settings\Settings;
 use App\Domain\Sync\Journal;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +19,10 @@ final class Inventory
 
         return DB::transaction(function () use ($data) {
             $this->settings->assertRunning();
+            $data['ingredient_id'] = app(IngredientCatalog::class)->identities()[$data['ingredient_id']] ?? $data['ingredient_id'];
             $barcode = $data['barcode'] ?? null;
-            $existing = $barcode ? DB::table('products')->where('barcode', $barcode)->lockForUpdate()->first() : null;
+            $existing = $barcode ? DB::table('products')->where('barcode', $barcode)->lockForUpdate()->first()
+                : (isset($data['id']) ? DB::table('products')->where('id', $data['id'])->lockForUpdate()->first() : null);
             $id = $existing->id ?? ($barcode ? Uuid::uuid5(Uuid::NAMESPACE_URL, 'privatebar:barcode:'.$barcode)->toString() : ($data['id'] ?? (string) Str::uuid()));
             $product = ['name' => $data['name'], 'brand' => $data['brand'] ?? null, 'barcode' => $barcode ?: null,
                 'abv' => $data['abv'] ?? null, 'generic' => (bool) ($data['generic'] ?? false), 'manually_corrected' => true,

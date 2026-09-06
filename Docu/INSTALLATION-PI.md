@@ -1,6 +1,6 @@
-# PrivateBar 1.0.0 – Raspberry-Pi-Erstinstallation
+# PrivateBar 1.0.2 – Raspberry-Pi-Erstinstallation
 
-Das Paket `privatebar-1.0.0-pi-installation.tar.gz` enthält die Anwendung,
+Das Paket `privatebar-1.0.2-pi-installation.tar.gz` enthält die Anwendung,
 Produktionsbibliotheken, gebaute Frontend-Dateien und die Vorlagen für Pi-Dienste.
 Es ist ein Anwendungspaket für die Erstinstallation, kein SD-Karten-Abbild und
 kein signiertes Update für „Freigegebene Version installieren“.
@@ -58,13 +58,13 @@ mit dem Archiv ausführen. Ein vorhandenes /srv/privatebar nicht überschreiben.
 
 ```sh
 sudo useradd --system --user-group --home-dir /srv/privatebar --shell /usr/sbin/nologin privatebar
-sudo mkdir -p /srv/privatebar/releases/1.0.0 /srv/privatebar/shared
-sudo tar --no-same-owner -xzf privatebar-1.0.0-pi-installation.tar.gz -C /srv/privatebar/releases/1.0.0
-sudo mv /srv/privatebar/releases/1.0.0/storage /srv/privatebar/shared/storage
-sudo cp /srv/privatebar/releases/1.0.0/.env.example /srv/privatebar/shared/.env
-sudo ln -s /srv/privatebar/shared/storage /srv/privatebar/releases/1.0.0/storage
-sudo ln -s /srv/privatebar/shared/.env /srv/privatebar/releases/1.0.0/.env
-sudo ln -s /srv/privatebar/releases/1.0.0 /srv/privatebar/current
+sudo mkdir -p /srv/privatebar/releases/1.0.2 /srv/privatebar/shared
+sudo tar --no-same-owner -xzf privatebar-1.0.2-pi-installation.tar.gz -C /srv/privatebar/releases/1.0.2
+sudo mv /srv/privatebar/releases/1.0.2/storage /srv/privatebar/shared/storage
+sudo cp /srv/privatebar/releases/1.0.2/.env.example /srv/privatebar/shared/.env
+sudo ln -s /srv/privatebar/shared/storage /srv/privatebar/releases/1.0.2/storage
+sudo ln -s /srv/privatebar/shared/.env /srv/privatebar/releases/1.0.2/.env
+sudo ln -s /srv/privatebar/releases/1.0.2 /srv/privatebar/current
 sudo chown -R privatebar:privatebar /srv/privatebar
 sudo chmod 600 /srv/privatebar/shared/.env
 ```

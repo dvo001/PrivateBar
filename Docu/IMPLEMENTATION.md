@@ -1,6 +1,6 @@
 # Umsetzungsstand
 
-Stand: 6. September 2026, Version 1.0.1. Die Anwendung ist implementiert und lokal geprüft.
+Stand: 6. September 2026, Version 1.0.2. Die Anwendung ist implementiert und lokal geprüft.
 Eine Produktionsfreigabe gemäss AGENTS.md ist damit noch nicht erteilt.
 
 ## Implementiert
@@ -102,3 +102,34 @@ Der Git-Tag `v1.0.1` kennzeichnet diesen Quellstand. Er ist keine Bestätigung
 der ausstehenden Produktionsfreigabe und löst keine Bereitstellung aus.
 Die CI prüft zusätzlich die Pi-Helfer; lokale Installationsarchive unter
 `artifacts/` bleiben ausserhalb von Git.
+
+## Zutatenprüfung und Amaretto-Korrektur
+
+Die Grundliste enthält im Stand v1.0.1 nur 27 Zutaten. Weitere Lücken und
+fehlende Synonyme sind in [ZUTATEN-CHECK.md](ZUTATEN-CHECK.md) dokumentiert;
+die Prüfung umfasst den Quellstand und externe Rezeptdaten, nicht die Cyon-DB.
+Amaretto ist als gezielte Korrektur vorbereitet: neue Installationen erhalten
+die Zutat, bestehende Installationen verwenden den idempotenten AmarettoSeeder.
+Dieser bewahrt vorhandene Zuordnungen und protokolliert Ergänzungen für die
+Synchronisation. Die Anleitung steht in [KORREKTUR-AMARETTO.md](KORREKTUR-AMARETTO.md).
+Die übrigen im Bericht genannten Ergänzungen sind mit Version 1.0.2 umgesetzt.
+
+## Version 1.0.2: Vollständiger Grundkatalog und bearbeitbare Zuordnungen
+
+- 134 konkrete Zutaten, 14 allgemeine Bereichseinträge und 355 Namen/Synonyme
+  bei einer Neuinstallation; Ergänzung bestehender Instanzen über IngredientCatalogSeeder.
+- Bereichsfilter und Suche beim Flaschenscan, gruppierte Auswahl auch ohne
+  JavaScript und in der Rezepterfassung. Eine vorläufige Bereichszuordnung
+  erfüllt keine spezifische Rezeptzutat.
+- Vorhandene Flaschen samt Zutatenzuordnung bearbeitbar; keine neue Flasche
+  bei einem Zuordnungswechsel. Zutaten können neu erfasst, umbenannt und einem
+  Bereich zugeordnet werden. Vorhandene Synonyme sind sichtbar und entfernbar.
+- Synonymlöschungen werden mit vollständigen Synonymlisten synchronisiert;
+  ältere Payloads ohne dieses Feld erhalten bestehende Synonyme.
+- Eindeutige alte Importnamen werden bei Bestand, Rezeptmachbarkeit,
+  Alkoholschätzung und Einkauf auf die Hauptzutat aufgelöst. Historische IDs
+  und Verweise bleiben erhalten; private Konflikte werden nicht überschrieben.
+- Bourbon und Scotch getrennt für neue Zuordnungen; bestehende generische
+  Whisky-Angaben bleiben bis zur manuellen Präzisierung erhalten.
+- Keine neue Schemamigration oder Composer-Abhängigkeit. Updateanleitung:
+  [UPDATE-1.0.2.md](UPDATE-1.0.2.md). Zielsystemabnahme weiterhin ausstehend.
