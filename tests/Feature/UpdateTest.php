@@ -18,6 +18,7 @@ final class UpdateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config(['privatebar.version' => '0.1.0']);
         $this->root = sys_get_temp_dir().'/privatebar-release-test-'.bin2hex(random_bytes(5));
         mkdir($this->root.'/releases/old', 0755, true);
         mkdir($this->root.'/shared/storage', 0755, true);
@@ -86,6 +87,6 @@ final class UpdateTest extends TestCase
         self::assertSame($this->root.'/releases/1.0.0', realpath($this->root.'/current'));
         self::assertCount(3, $runner->calls);
         self::assertFalse(app(Settings::class)->maintenance());
-        self::assertSame($this->root.'/shared/.env',readlink($this->root.'/releases/1.0.0/.env'));
+        self::assertSame($this->root.'/shared/.env', readlink($this->root.'/releases/1.0.0/.env'));
     }
 }

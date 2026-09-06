@@ -27,7 +27,7 @@ def main():
         now = time.monotonic()
         if now >= refresh:
             try:
-                result = subprocess.run(['/usr/bin/php', '/srv/privatebar/current/artisan', 'privatebar:monitor-state'], capture_output=True, text=True, timeout=10, check=True)
+                result = subprocess.run(['/usr/bin/php8.3', '/srv/privatebar/current/artisan', 'privatebar:monitor-state'], capture_output=True, text=True, timeout=10, check=True)
                 state = json.loads(result.stdout)
             except (subprocess.SubprocessError, ValueError):
                 state = {'enabled': False}  # Background failure leaves the screen usable.

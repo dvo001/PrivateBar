@@ -24,3 +24,50 @@ physische Kamera-/Touch-/Monitorfunktionen, Live-SMB, Live-Anbieterzugänge sowi
 Deployment und Wiederherstellung auf Pi/Cyon. Details: [Umsetzungsstand](../IMPLEMENTATION.md).
 
 Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md).
+
+## Ergänzung am 6. September 2026: Cyon-Installation ohne SSH
+
+- PHP 8.3.30 / PHPUnit: 43 Tests, 177 Assertions erfolgreich (SQLite).
+- Neun neue Tests prüfen Wiederanlauf ohne doppelte Datensätze oder Sync-Ereignisse,
+  Rollback bei Fehlern, bestehende Instanzen, Cloud-Modus, Passwortvalidierung,
+  parallele Skriptaufrufe, Abschlussmarkierung und geheimnisfreie Fehlerausgaben.
+- PHPStan Level 5 erfolgreich (ohne optionale Turbo-Erweiterung).
+- Die neuen PHP-Dateien bestehen Laravel Pint; die projektweite Formatprüfung
+  meldet bestehende Abweichungen in der unveränderten `tests/Feature/UpdateTest.php`.
+- `git diff --check` erfolgreich. Noch keine Ausführung auf Cyon und keine neue
+  MariaDB-Abnahme des Installationsablaufs.
+
+## Version 1.0.0: Installationspaket am 6. September 2026
+
+- Nach dem Versionswechsel: 43 Tests, 177 Assertions erfolgreich (SQLite).
+- PHPStan Level 5 und projektweite Pint-Prüfung erfolgreich. Der zuvor genannte
+  Formatfehler in UpdateTest.php ist behoben; der Test simuliert ausdrücklich
+  die Ausgangsversion 0.1.0 für sein Update auf 1.0.0.
+- Separates Paket mit `composer install --no-dev --prefer-dist
+  --optimize-autoloader --no-interaction` aus der Lockdatei vorbereitet.
+- Plattformanforderungen des Pakets mit PHP 8.3.30 geprüft; Laravel startet.
+- Cyon-/Pi-Abnahme und Produktionsfreigabe bleiben ausstehend.
+
+## Pi-Grundkomponenten-Skript
+
+- Sieben isolierte Python-/Bash-Tests erfolgreich; keine Host-Pakete installiert.
+- Drei Monitorlogiktests erfolgreich; Bash-Syntax und git diff --check erfolgreich.
+- Sury-Release-Metadaten für Bookworm und Trixie listen arm64; offizielle
+  Keyring-Anleitung als Grundlage verwendet.
+- Installation und Paketdienststart auf echtem Raspberry Pi OS noch ausstehend.
+
+## Version 1.0.1: Einladungsmails und E-Mail-Verifizierung
+
+- Vollständiger PHP-Testlauf: 55 Tests, 248 Assertions erfolgreich (PHP 8.3.30, SQLite).
+
+- Zwölf neue Mail-/Verifizierungstests prüfen Versand an den richtigen Empfänger,
+  separate Bestätigung, Zugriffssperre für unbestätigte Konten, bestehende Konten,
+  Wiederholungsbegrenzung, Ablauf/Signatur, Konto-/Adressbindung, Login auf einem
+  zweiten Gerät, Versandfehler und Widerruf, Pi-/Wartungssperren sowie HTML und
+  Klartext einschliesslich unverändertem signiertem Link. Keine echten E-Mails gesendet.
+- PHPStan Level 5 und projektweite Pint-Prüfung erfolgreich.
+- Aktualisierte Dateien auf eine isolierte Kopie des bisherigen Cyon-1.0.0-Pakets
+  angewendet: vorhandene Produktionsbibliotheken laden die neuen Klassen; Migration
+  einer isolierten SQLite-Testdatenbank, optimize, health und die neuen gecachten
+  Verifizierungsrouten erfolgreich. Keine neue Schemamigration erforderlich.
+- SMTP-Zustellung auf Cyon und Zielgeräteabnahme bleiben ausstehend.

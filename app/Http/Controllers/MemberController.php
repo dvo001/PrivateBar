@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Access\AccessMail;
 use App\Domain\Access\MemberLinks;
 use App\Models\User;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -10,6 +11,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 final class MemberController
 {
@@ -33,6 +35,10 @@ final class MemberController
             abort(422, 'Ein anderes Mitglied muss deinen Reset-Link erstellen.');
         }
         $link = $links->issue($data['type'], $data['email'], auth()->guard()->id());
+        if ($data['type'] === 'invite' && ! app(AccessMail::class)->invitation(mb_strtolower(trim($data['email'])), $link['url'])) {
+            DB::table('invitations')->where('id', $link['id'])->update(['revoked_at' => now()]);
+            throw ValidationException::withMessages(['email' => AccessMail::FAILED.' Die Einladung wurde widerrufen; du kannst sie erneut erstellen.']);
+        }
         $qr = (new Writer(new ImageRenderer(new RendererStyle(240), new SvgImageBackEnd)))->writeString($link['url']);
 
         return view('settings.link', ['link' => $link, 'qr' => 'data:image/svg+xml;base64,'.base64_encode($qr)]);

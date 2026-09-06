@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Access\AccessGuard;
+use App\Domain\Access\AccessMail;
 use App\Domain\Access\MemberLinks;
 use App\Domain\Settings\Settings;
 use App\Models\User;
@@ -40,6 +41,9 @@ final class AccessController
             }
             Auth::login($user);
             $request->session()->regenerate();
+            if (! $user->hasVerifiedEmail()) {
+                return redirect()->intended('/email-bestaetigen')->with('message', app(AccessMail::class)->verification($user));
+            }
         }
 
         return redirect()->intended('/');
@@ -68,6 +72,10 @@ final class AccessController
         $user = $links->consume($type, $token, $data['password'], $data['name'] ?? '');
         Auth::login($user);
         $request->session()->regenerate();
+
+        if (! $user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice')->with('message', app(AccessMail::class)->verification($user));
+        }
 
         return redirect('/');
     }

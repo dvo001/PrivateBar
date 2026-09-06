@@ -26,6 +26,8 @@ Nur `public/` ist Webroot; weder Repository noch `storage/app/private` freigeben
 
 ## Cyon
 
+### Mit SSH
+
 1. Private Subdomain `privatebar.vonrufs.ch` einrichten, PHP 8.3 wählen und Webroot
    auf das `public/`-Verzeichnis zeigen lassen. Im Hostingpanel ein gültiges
    Let's-Encrypt-Zertifikat aktivieren; HTTP auf HTTPS umleiten.
@@ -59,9 +61,173 @@ Nur `public/` ist Webroot; weder Repository noch `storage/app/private` freigeben
 
 Der konkrete SSH-Pfad, PHP-Binary-Pfad und die Hostingkonfiguration müssen im
 bestehenden Cyon-Konto festgestellt werden; es wurden keine Zugangsdaten vorgegeben.
-Die Anwendung verschickt keine Einladungs- oder Reset-E-Mails.
+Die Anwendung verschickt Einladungen und Bestätigungs-E-Mails per SMTP.
+Passwort-Resetlinks bleiben manuell teilbar. SMTP vor dem ersten Online-Login
+gemäss dem folgenden Abschnitt einrichten.
+
+### SMTP für Einladungen und E-Mail-Verifizierung
+
+Ab 1.0.1 gehört der E-Mail-Versand zur Version 1. Auf Cyon ein eigenes Mailkonto
+anlegen und dessen Daten in der dortigen `.env` eintragen:
+
+```dotenv
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtps
+MAIL_HOST=mail.cyon.ch
+MAIL_PORT=465
+MAIL_USERNAME=privatebar@vonrufs.ch
+MAIL_PASSWORD="DAS_PASSWORT_DES_MAILKONTOS"
+MAIL_FROM_ADDRESS=privatebar@vonrufs.ch
+MAIL_FROM_NAME="PrivateBar"
+MAIL_TIMEOUT=15
+```
+
+Die Beispieladresse muss tatsächlich als zulässiges Mailkonto/Absenderadresse
+im Hosting eingerichtet sein. SMTP-Zugangsdaten sind nicht die Datenbankzugänge.
+`APP_URL=https://privatebar.vonrufs.ch` muss auf die tatsächliche öffentliche
+Adresse zeigen; daraus werden die E-Mail-Links gebildet. Ein vorhandenes
+`MAIL_URL` entfernen, damit es die einzelnen SMTP-Einstellungen nicht übersteuert.
+Nach Änderungen `php artisan config:cache` ausführen; ohne SSH einmalig per
+my.cyon-Cronjob mit dem tatsächlichen PHP-/Projektpfad. Cronjob danach entfernen.
+
+Cyon dokumentiert [mail.cyon.ch mit SSL/TLS auf Port 465](https://www.cyon.ch/support/a/e-mail-konto-einrichten-imap-pop3-und-smtp-einstellungen).
+Der Versand erfolgt direkt während des Vorgangs mit 15 Sekunden SMTP-Timeout;
+es ist kein Queue-Worker erforderlich. `MAIL_MAILER=log` und `array` werden für
+Zugangs-E-Mails absichtlich abgelehnt, damit keine Zugangstoken in Logs landen.
+Auf dem Pi `MAIL_MAILER=log` und leere SMTP-Zugangsdaten belassen: Er versendet
+keine Einladungs- oder Bestätigungs-E-Mails.
+
+Bestehende Konten mit leerem `email_verified_at` müssen nach dem Update ihre
+Adresse bestätigen. Es wird kein bestehendes Konto automatisch als bestätigt
+markiert. Die erste Anmeldung fordert eine Bestätigungs-E-Mail an. Bei einem
+SMTP-Fehler bleibt das Konto erhalten und die Bestätigungsseite bietet einen
+neuen Versuch an. Einladungsfehler widerrufen dagegen den neu erzeugten Link.
+Annahme der Einladung allein bestätigt die E-Mail-Adresse nicht, da der Link
+auch kopiert oder als QR-Code geteilt werden kann.
+
+### Ohne SSH über my.cyon
+
+Alternativ erfolgt die Bereitstellung über den my.cyon-Dateimanager und Cronjobs. Dafür ist keine interaktive Shell auf Cyon nötig; PHP-Befehle laufen
+weiterhin serverseitig über Cron. Die Vorbereitung des Pakets erfolgt lokal mit
+PHP 8.3 und Composer.
+
+**Stand: Das einmalige Installationsskript `tools/cyon-install.php` ist
+implementiert; die Abnahme auf echtem Cyon-Hosting steht noch aus.** Es ist nur
+per CLI ausführbar, nicht über den Browser. Es ersetzt für diesen Ablauf die
+interaktive Passwortabfrage von `privatebar:member`.
+
+1. In my.cyon die Subdomain `privatebar.vonrufs.ch`, eine Datenbank mit eigenem
+   Datenbankkonto und ein Let's-Encrypt-Zertifikat einrichten. HTTPS erzwingen
+   und unter **Erweitert → PHP-Versionsmanager** PHP 8.3 wählen.
+2. Lokal eine saubere Kopie des geprüften Tags vorbereiten:
+
+   ```sh
+   composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+   php tools/build.php
+   ```
+
+   Das Uploadpaket muss `vendor/`, die gebauten Frontend-Dateien und
+   `public/.htaccess` enthalten. Keine lokale `.env`, Datenbanken, privaten
+   Fotos oder lokal erzeugten Laravel-Konfigurationscaches übernehmen.
+   Das Paket über den my.cyon-Dateimanager hochladen und entpacken.
+3. Das Zielverzeichnis der Subdomain auf das Unterverzeichnis `public/` setzen.
+   `.env`, `vendor/` und `storage/` dürfen nicht öffentlich erreichbar sein.
+   Die Laravel-Schreibverzeichnisse `storage/` und `bootstrap/cache/` müssen
+   vorhanden und für PHP beschreibbar sein.
+4. Auf Cyon eine eigene `.env` anhand von `.env.example` erstellen:
+
+   ```dotenv
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=https://privatebar.vonrufs.ch
+   PRIVATEBAR_MODE=cloud
+   PRIVATEBAR_INSTANCE_ID=cyon-housebar
+   SESSION_SECURE_COOKIE=true
+   ```
+
+   Datenbankhost, Datenbankname, Benutzer und Passwort gemäss Hostingkonto
+   ergänzen. Einen eigenen `APP_KEY` ausschliesslich beim Erstaufbau erzeugen
+   und dauerhaft erhalten. PIN und SMB-Zugangsdaten nicht hochladen.
+5. Im Dateimanager den Ordner `storage/app/private/cyon-install/` erstellen
+   (Rechte `0700`) und darin die Datei `input.json` (Rechte `0600`) anlegen:
+
+   ```json
+   {
+     "email": "person@example.ch",
+     "name": "Vorname",
+     "password": "HIER EIN EIGENES PASSWORT EINTRAGEN",
+     "device_name": "Hausbar Pi"
+   }
+   ```
+
+   Ein eigenes Passwort mit mindestens zwölf Zeichen einsetzen. JSON erfordert
+   bei Anführungszeichen und Backslashes im Passwort entsprechende Maskierung.
+   Diese Datei nie in Git oder ein allgemeines Releasearchiv aufnehmen.
+   `.env` ebenfalls auf `0600` setzen. Alle Projektdateien müssen unter einem
+   echten absoluten Pfad liegen; der Installationsordner darf keine Symlinks
+   enthalten oder über solche erreichbar sein.
+
+   Unter **Erweitert → Cronjobs** vorübergehend minütlich ausführen:
+
+   ```text
+   /usr/bin/php83 /absoluter/pfad/zu/privatebar/tools/cyon-install.php
+   ```
+
+   Beide Pfade an das Hosting anpassen. Den regulären Scheduler erst nach der
+   Installation aktivieren. Die Domain bis zum erfolgreichen Abschluss noch
+   nicht für den normalen Zugriff freigeben.
+
+   Das Skript prüft PHP und Erweiterungen sowie die Cloud-Produktionskonfiguration,
+   erzeugt einen fehlenden `APP_KEY`, führt Migrationen durch und legt Grunddaten,
+   Mitglied, Gerätezugang und Erstabgleich in einer gemeinsamen Transaktion an.
+   Danach erstellt es die Laravel-Caches und prüft Datenbank und Frontend.
+   Ein vorhandener Schlüssel bleibt erhalten. Eine Instanz mit bestehenden
+   Mitgliedern oder Geräten wird abgelehnt, sofern sie nicht zu diesem
+   angefangenen Installationslauf gehört.
+
+   Fehlerausgaben nennen nur den fehlgeschlagenen Schritt, keine Zugangsdaten.
+   Nach einem Fehler die Ursache prüfen und denselben Lauf erneut starten:
+   `.env` und `device-token.txt` unverändert behalten. Migrationen sind separat
+   wiederanlaufbar; ein bereits bestätigter Datenaufbau wird nicht wiederholt.
+   Eine Dateisperre verhindert parallele Installationsläufe.
+
+   Nach Erfolg liegt im Installationsordner die Sperrdatei `complete`;
+   weitere Aufrufe beenden sich ohne erneute Installation. `input.json` wird
+   automatisch gelöscht. Den temporären Cronjob entfernen und den Inhalt von
+   `device-token.txt` geschützt als `PRIVATEBAR_DEVICE_TOKEN` in die Pi-`.env`
+   übernehmen. Danach `device-token.txt`, eine allenfalls verbliebene
+   `input.json` und `tools/cyon-install.php` auf Cyon löschen. `complete` und
+   `lock` behalten. Der Geräte-Token wird niemals in der Cron-Ausgabe angezeigt.
+6. Nach erfolgreicher Erstinstallation unter **Erweitert → Cronjobs** jede
+   Minute den Scheduler starten. Beispiel mit anzupassenden absoluten Pfaden:
+
+   ```text
+   /usr/bin/php83 /absoluter/pfad/zu/privatebar/artisan schedule:run
+   ```
+
+   PHP-8.3-CLI-Pfad und Projektpfad im konkreten Hostingkonto prüfen; die
+   PHP-Version für Browseraufrufe legt nicht automatisch die Cron-Version fest.
+7. Anmeldung, HTTPS, Schreibzugriffe und Hintergrundaufgaben auf Cyon prüfen.
+   Anbieterzugänge wie im SSH-Ablauf erst nach deren Einrichtung aktivieren und
+   anschliessend den Konfigurationscache serverseitig erneuern.
+
+Auch spätere Updates benötigen serverseitige Migrationen, Cache-Erneuerung und
+Gesundheitsprüfungen. Dafür muss ein separater, kontrollierter Cron-Ablauf
+vorbereitet werden; das Erstinstallationsskript darf nicht erneut verwendet
+werden. Dasselbe gilt für die Befehle unter „Wartung und Wiederherstellung“.
+Diese Betriebsabläufe ohne SSH sind ebenfalls noch nicht implementiert oder
+abgenommen.
+
+Cyon-Anleitungen: [Dateimanager](https://www.cyon.ch/support/a/bedienung-vom-dateimanager-im-my-cyon),
+[PHP-Versionsmanager](https://www.cyon.ch/support/a/php-versionsmanager) und
+[Cronjobs](https://www.cyon.ch/support/a/cronjob-erstellen-und-bearbeiten).
 
 ## Raspberry Pi
+
+Für das vorbereitete Paket `artifacts/privatebar-1.0.0-pi-installation.tar.gz`
+steht der Erstaufbau in [INSTALLATION-PI.md](INSTALLATION-PI.md). Bibliotheken
+und Frontend sind darin enthalten; Composer-Installation und Frontend-Build
+entfallen bei Verwendung dieses Pakets. Es ist kein signiertes Pi-Update.
 
 - Raspberry Pi 4, mindestens 2 GB RAM, 64-Bit-OS, 32 GB oder mehr Speicher;
   USB-SSD bevorzugt. Versorgung 5 V / 3 A, geeignete Kühlung und Touchmonitor

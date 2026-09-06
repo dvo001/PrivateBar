@@ -11,7 +11,7 @@ MOUNT = '/mnt/privatebar-photos'
 
 
 def artisan(*arguments):
-    result = subprocess.run(['/usr/sbin/runuser', '-u', 'privatebar', '--', '/usr/bin/php', APP + '/artisan', *arguments], cwd=APP, capture_output=True, text=True, timeout=30, check=True)
+    result = subprocess.run(['/usr/sbin/runuser', '-u', 'privatebar', '--', '/usr/bin/php8.3', APP + '/artisan', *arguments], cwd=APP, capture_output=True, text=True, timeout=30, check=True)
     return result.stdout
 
 

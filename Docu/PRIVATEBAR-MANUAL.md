@@ -286,11 +286,22 @@ Das letzte verbleibende Mitglied kann nicht entfernt werden. Das eigene Konto ka
 ### Person einladen
 
 1. E-Mail-Adresse der neuen Person eingeben.
-2. Einladung erzeugen.
-3. Link kopieren oder QR-Code mit dem Smartphone scannen lassen.
-4. Die eingeladene Person setzt ihr Passwort.
+2. „Einladung per E-Mail senden“ wählen.
+3. Die eingeladene Person öffnet die E-Mail. Link und QR-Code stehen zusätzlich zum Teilen bereit.
+4. Die eingeladene Person setzt ihren Namen und ihr Passwort.
+5. Sie erhält eine zweite E-Mail und bestätigt damit ihre E-Mail-Adresse. Erst danach öffnet sich die Bar.
 
-Der Link ist an die eingegebene E-Mail-Adresse gebunden, nur einmal verwendbar und 30 Minuten gültig. PrivateBar versendet keine Einladungs-E-Mails.
+Der Link ist an die eingegebene E-Mail-Adresse gebunden, nur einmal verwendbar und 30 Minuten gültig. Bei einem Versandfehler wird die Einladung widerrufen; sie kann erneut erstellt werden.
+
+### E-Mail-Adresse bestätigen
+
+Auch bestehende Mitglieder und das bei der Installation angelegte erste Konto
+müssen ihre E-Mail-Adresse bestätigen. Nach der Anmeldung wird automatisch eine
+Bestätigungs-E-Mail angefordert. Auf der Bestätigungsseite kann der Versand
+nach einer Minute erneut ausgelöst werden. Der Link gilt 30 Minuten und setzt
+eine Anmeldung mit demselben Konto voraus. Bei einem abgelaufenen Link zurück
+zur Bar navigieren und auf der Bestätigungsseite eine neue E-Mail anfordern.
+Ein SMTP-Fehler löscht das Konto nicht; die Bestätigung kann wiederholt werden.
 
 ### Passwort zurücksetzen
 

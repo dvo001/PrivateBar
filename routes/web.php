@@ -7,11 +7,17 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UpdateController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/anmelden', [AccessController::class, 'form'])->name('login');
 Route::post('/anmelden', [AccessController::class, 'login']);
 Route::post('/abmelden', [AccessController::class, 'logout']);
+Route::middleware('auth')->group(function () {
+    Route::get('/email-bestaetigen', [VerificationController::class, 'notice'])->name('verification.notice');
+    Route::post('/email-bestaetigen/senden', [VerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
+    Route::get('/email-bestaetigen/{id}/{hash}', [VerificationController::class, 'verify'])->middleware(['signed:relative', 'throttle:6,1'])->name('verification.verify');
+});
 Route::get('/zugang/{type}/{token}', [AccessController::class, 'linkForm'])->where('type', 'invite|reset');
 Route::post('/zugang/{type}/{token}', [AccessController::class, 'redeem'])->where('type', 'invite|reset')->middleware('throttle:10,1');
 Route::post('/wartung/entsperren', [AccessController::class, 'unlockMaintenance'])->middleware('local');
@@ -47,7 +53,7 @@ Route::middleware('bar')->group(function () {
     Route::post('/einstellungen/ersatz', [SettingsController::class, 'substitution']);
     Route::post('/einstellungen/synchronisieren', [SettingsController::class, 'sync']);
     Route::get('/einstellungen/mitglieder', [MemberController::class, 'index']);
-    Route::post('/einstellungen/mitglieder/link', [MemberController::class, 'issue']);
+    Route::post('/einstellungen/mitglieder/link', [MemberController::class, 'issue'])->middleware('throttle:6,1');
     Route::post('/einstellungen/einladungen/{id}/widerrufen', [MemberController::class, 'revoke']);
     Route::post('/einstellungen/mitglieder/{id}/entfernen', [MemberController::class, 'remove']);
     Route::post('/einstellungen/mitglieder/{id}/sitzungen', [MemberController::class, 'sessions']);

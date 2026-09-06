@@ -39,7 +39,7 @@ Triff kleine technische Detailentscheidungen selbstständig, wenn sie die hier b
 
 - Cyon Webhosting Single.
 - Öffentliche Adresse: `https://privatebar.vonrufs.ch`.
-- Bereitstellung per SSH.
+- Bereitstellung per SSH oder als vorbereitetes Paket über my.cyon-Dateimanager und Cronjobs.
 - HTTPS mit Let’s Encrypt ist verpflichtend.
 - Keine dauerhaft laufenden Worker, WebSocket-Server oder Node-/Python-Dienste voraussetzen.
 
@@ -149,6 +149,9 @@ Private Fotorahmenbilder, SMB-Zugangsdaten, Kiosk-PIN und lokale Systemkonfigura
 ### Onlinekonten
 
 - Anmeldung mit E-Mail-Adresse und Passwort.
+- Onlinezugriff erfordert eine bestätigte E-Mail-Adresse; das gilt auch für bestehende und per Installation angelegte Konten.
+- Bestätigungs-E-Mails werden ausschliesslich auf Cyon per SMTP versendet. Signierte Links sind an Konto und aktuelle E-Mail-Adresse gebunden und 30 Minuten gültig.
+- Erneuter Versand ist einmal pro Minute möglich. SMTP-Fehler erscheinen direkt am Vorgang; Zugangsdaten und Zugangslinks werden nicht in Mail-Logs geschrieben.
 - Passwort mindestens zwölf Zeichen; keine erzwungenen Zeichenklassen.
 - Keine Zwei-Faktor-Anmeldung in Version 1.
 - Keine öffentliche Registrierung.
@@ -162,7 +165,10 @@ Private Fotorahmenbilder, SMB-Zugangsdaten, Kiosk-PIN und lokale Systemkonfigura
 ### Einladungen und Passwort-Reset
 
 - Ein bestehendes Mitglied erstellt eine Einladung für eine konkrete E-Mail-Adresse.
-- Einladungslink und QR-Code werden zum Kopieren beziehungsweise Scannen angezeigt; es werden keine E-Mails versendet.
+- Einladungen werden per SMTP an die angegebene E-Mail-Adresse versendet. Link und QR-Code bleiben zusätzlich zum Kopieren beziehungsweise Scannen sichtbar.
+- Nach Annahme einer Einladung bestätigt das neue Mitglied seine E-Mail-Adresse über eine separate Bestätigungs-E-Mail.
+- Schlägt der Einladungsversand fehl, wird die erzeugte Einladung widerrufen und ein erneuter Versuch angeboten.
+- Passwort-Resetlinks bleiben manuell teilbar; es gibt weiterhin keinen öffentlichen Passwort-Resetversand.
 - Einladung ist einmal verwendbar und 30 Minuten gültig.
 - Offene Einladungen werden mit Ablaufzeit angezeigt und können widerrufen werden.
 - Ein Mitglied kann für ein anderes Mitglied einen einmal verwendbaren, 30 Minuten gültigen Reset-Link samt QR-Code erzeugen.
@@ -397,7 +403,7 @@ Stil: verspielt-illustrativ, mediterran, französische Riviera der 1950er/60er J
 - Kein separates öffentliches Staging-System.
 - Aktualisiere zuerst Cyon, danach den Pi.
 - Cyon-API bleibt während des Übergangs mit der vorherigen Pi-Version kompatibel.
-- Cyon wird separat per SSH aktualisiert.
+- Cyon wird separat per SSH oder nach dokumentiertem Paket-/Cron-Ablauf aktualisiert.
 - Lokale Einstellungen bieten **„Update prüfen“** und **„Freigegebene Version installieren“**.
 - Vor lokaler Installation Kompatibilität, Signatur/Prüfsumme, freien Speicher und Migrationen prüfen.
 - Bei fehlgeschlagenem Pi-Update automatisch zur vorherigen Programmversion zurückkehren.
@@ -415,7 +421,7 @@ Stil: verspielt-illustrativ, mediterran, französische Riviera der 1950er/60er J
 
 - Lokale Pi-Anwendung, Kiosk, Touchoberfläche und Offlinebetrieb.
 - Cyon-Webteil und persönliche Konten.
-- Einladung und Passwort-Reset per Link/QR-Code.
+- Einladung per E-Mail und zusätzlichem Link/QR-Code, E-Mail-Verifizierung sowie Passwort-Reset per Link/QR-Code.
 - Bidirektionale Synchronisation.
 - Barbestand, Barcode-Scanner und Open-Food-Facts-Zuordnung.
 - Einkaufsliste.

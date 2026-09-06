@@ -29,6 +29,12 @@ jobs:
       - run: composer install --no-interaction --prefer-dist
       - run: php tools/build.php
       - run: composer check
+      - name: Pi helper checks
+        run: |
+          bash -n deploy/pi/install-prerequisites.sh
+          sh -n deploy/pi/kiosk.sh
+          python3 tests/Unit/test_pi_prerequisites.py
+          python3 tests/Unit/test_monitor.py
       - name: MariaDB integration
         run: php vendor/bin/phpunit --fail-on-risky --fail-on-warning
         env:

@@ -5,6 +5,6 @@ After=mariadb.service
 Type=oneshot
 User=privatebar
 WorkingDirectory=/srv/privatebar/current
-ExecStart=/usr/bin/php artisan privatebar:install-update
+ExecStart=/usr/bin/php8.3 artisan privatebar:install-update
 TimeoutStartSec=600
 NoNewPrivileges=true

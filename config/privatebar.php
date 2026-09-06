@@ -17,6 +17,6 @@ return [
     'release_public_key' => env('PRIVATEBAR_RELEASE_PUBLIC_KEY'),
     'release_token' => env('PRIVATEBAR_RELEASE_TOKEN'),
     'release_manifest' => env('PRIVATEBAR_RELEASE_MANIFEST'),
-    'version' => '0.1.0',
+    'version' => '1.0.1',
     'schema_version' => 1,
 ];

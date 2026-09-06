@@ -25,7 +25,7 @@ final class MemberLinks
         $id = (string) Str::uuid();
         DB::table($table)->insert(['id' => $id, 'email' => $email, 'token_hash' => hash('sha256', $token), 'expires_at' => now()->addMinutes(30), 'created_by' => $creator, 'created_at' => now(), 'updated_at' => now()]);
 
-        return ['id' => $id, 'token' => $token, 'type' => $type, 'url' => url('/zugang/'.$type.'/'.$token)];
+        return ['id' => $id, 'token' => $token, 'type' => $type, 'url' => rtrim(config('app.url'), '/').'/zugang/'.$type.'/'.$token];
     }
 
     public function consume(string $type, string $token, string $password, string $name): User

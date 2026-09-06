@@ -6,6 +6,6 @@ Before=privatebar-tick.service
 Type=oneshot
 User=privatebar
 WorkingDirectory=/srv/privatebar/current
-ExecStart=/usr/bin/php artisan privatebar:boot
+ExecStart=/usr/bin/php8.3 artisan privatebar:boot
 [Install]
 WantedBy=multi-user.target
