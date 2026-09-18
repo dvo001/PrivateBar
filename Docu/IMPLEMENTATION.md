@@ -133,3 +133,35 @@ Die übrigen im Bericht genannten Ergänzungen sind mit Version 1.0.2 umgesetzt.
   Whisky-Angaben bleiben bis zur manuellen Präzisierung erhalten.
 - Keine neue Schemamigration oder Composer-Abhängigkeit. Updateanleitung:
   [UPDATE-1.0.2.md](UPDATE-1.0.2.md). Zielsystemabnahme weiterhin ausstehend.
+
+## Zutatenkorrektur für den Export vom 8. September 2026
+
+Ein separat ausführbares CLI-/Cron-Skript mit Vorschau ist unter
+`tools/correct-ingredients.php` vorbereitet. Es korrigiert gezielt Kategorien,
+119 Zutaten und acht Produktzuordnungen; fünf Zutaten werden ergänzt. Historische
+IDs und der Barbestand bleiben erhalten. Automatische alkoholische Zutaten können
+optional deaktiviert werden. Kategorien müssen wegen fehlender Kategorien-Sync
+vorher separat auf dem Pi angelegt werden. Anleitung und Grenzen stehen in
+[KORREKTUR-ZUTATEN-2026-09-08.md](KORREKTUR-ZUTATEN-2026-09-08.md), alle
+Einzelkorrekturen in [KORREKTUR-ZUTATEN-DETAILS.md](KORREKTUR-ZUTATEN-DETAILS.md).
+Die Live-Daten wurden nicht verändert; keine Änderung am allgemeinen Importer.
+
+## Mengen und Einheiten: 18. September 2026
+
+Der Mengenparser verarbeitet gemischte Brüche mit Bindestrich, Unicode-Brüche,
+führende Dezimalpunkte, Dezimalkommas sowie weitere metrische und Löffeleinheiten.
+Fehlende Einheiten werden nicht mehr als Stück interpretiert. Brüche bleiben
+in der Anzeige erhalten; cl-Mengen werden normalerweise auf eine Nachkommastelle
+gerundet, eindeutige Volumenbereiche metrisch dargestellt. Die interne
+Umrechnungspräzision bleibt erhalten.
+Der Vorschau-/Korrekturbefehl `privatebar:normalize-measures` repariert vorhandene
+Importmengen anhand ihrer Originalangaben; `--apply` veröffentlicht geänderte
+Rezepte für die Synchronisation. Eigene Rezepte und Haushaltskopien bleiben erhalten.
+Anleitung und fachliche Grenzen: [KORREKTUR-MENGEN.md](KORREKTUR-MENGEN.md).
+Keine Ausführung auf Cyon/Pi und keine Produktionsfreigabe.
+
+## Vereinfachte Suche unter Machbar
+
+Unter «Machbar» enthält das Suchformular nur «Menü suchen», «Alkohol» und
+«Sortierung». Die übrigen Suchansichten verwenden weiterhin ihre bisherigen
+Filter. Die Machbarkeitsbeschränkung wird weiterhin serverseitig gesetzt.

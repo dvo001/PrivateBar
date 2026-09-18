@@ -2,6 +2,7 @@
 
 use App\Domain\Access\AccessGuard;
 use App\Domain\Bar\Inventory;
+use App\Domain\Recipes\MeasureRepair;
 use App\Domain\Recipes\RecipeWriter;
 use App\Domain\Settings\BackgroundTasks;
 use App\Domain\Settings\Settings;
@@ -265,6 +266,14 @@ Artisan::command('privatebar:reset-projection {epoch} {cursor} {--discard-pendin
     $settings->set('sync_requested', true);
     $settings->set('daily_recommendation', []);
     $this->info('Projektion vorbereitet. Wartungsmodus nach Prüfung mit PIN beenden und synchronisieren.');
+
+    return 0;
+});
+
+Artisan::command('privatebar:normalize-measures {--apply : Korrekturen speichern und synchronisieren}', function () {
+    $apply = (bool) $this->option('apply');
+    $count = app(MeasureRepair::class)->run($apply);
+    $this->info($count.' Rezepte '.($apply ? 'korrigiert.' : 'betroffen (nur Vorschau).'));
 
     return 0;
 });

@@ -107,3 +107,35 @@ Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md)
   Katalog von 27 auf 148 Einträge ergänzt, Wiederholung mit 0 Änderungen,
   Produktionscaches, neue Routen und Healthcheck erfolgreich. Bestehende
   Produktionsbibliotheken laden alle neuen Klassen ohne Composer-Neuinstallation.
+
+## Zutatenkorrektur am 8. September 2026
+
+- Vollständige SQLite-Suite: 69 Tests, 767 Assertions erfolgreich (PHP 8.3.30).
+- Vier neue Tests: Vorschau ohne bleibende Änderungen, Wiederholbarkeit,
+  unveränderter Bestand, gültige Sync-Payloads, optionale Automatik-Korrektur,
+  vollständiges Rollback bei spätem Zuordnungskonflikt, Pi-Schutz und Synonymkonflikt.
+- Zusätzlicher isolierter Test mit den vier tatsächlichen JSON-Exporten:
+  141 Änderungen, zweiter Lauf 0; alle erzeugten Sync-Payloads validiert.
+  Optionaler Automatiklauf: 37 Änderungen. Keine Verbindung zur Live-Datenbank.
+- PHPStan Level 5 inklusive beider neuer Skriptdateien: keine Fehler.
+  Das statische PHP-Binary meldete die nicht ladbare optionale Turbo-Erweiterung;
+  die Analyse lief erfolgreich zu Ende.
+- Projektweite Pint-Prüfung, PHP-Syntax und `git diff --check` erfolgreich.
+- Kein MariaDB-Server in dieser Umgebung vorhanden; MariaDB-/Cyon-/Pi-Ausführung
+  und echter Instanzabgleich bleiben ungeprüft. Keine Frontendänderung.
+
+## Mengen-/Einheitenkorrektur am 18. September 2026
+
+- Vollständige SQLite-Suite unter PHP 8.3.30: 109 Tests, 846 Assertions erfolgreich.
+- 36 neue Unit-Testfälle für metrische Umrechnung, Bruchschreibweisen, ungültige
+  und mehrdeutige Mengen, genaue Bruchanzeige, praktische cl-Rundung und Bereiche.
+- Vier neue Integrationstests prüfen Vorschau, Wiederholbarkeit, Sync-Payload,
+  Erhalt privater Rezepte und manueller Übersetzungen, Quell-Deduplizierung,
+  Pi-/Wartungssperren sowie die gerenderte Rezeptansicht für Fuzzy Asshole und
+  Irish Curdling Cow.
+- PHPStan Level 5, projektweite Pint-Prüfung und `git diff --check` erfolgreich.
+  Das statische PHP-Binary lädt die optionale PHPStan-Turbo-Erweiterung nicht;
+  die Analyse selbst besteht.
+- Keine MariaDB-, Browser-/Touch-, Cyon- oder Pi-Abnahme durchgeführt. Die
+  Blade-Ausgabe wurde serverseitig geprüft; Layout/CSS bleiben unverändert.
+  Keine Live-Daten geändert. Anwendung: [KORREKTUR-MENGEN.md](../KORREKTUR-MENGEN.md).

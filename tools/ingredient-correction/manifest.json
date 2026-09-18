@@ -1,0 +1,1733 @@
+{
+  "categories": {
+    "basic": {
+      "before": {
+        "name": "Grundzutaten",
+        "typical_abv": "0.00"
+      },
+      "after": {
+        "name": "Grundzutaten",
+        "typical_abv": "0.00"
+      }
+    },
+    "bitters": {
+      "before": {
+        "name": "Bitter",
+        "typical_abv": "40.00"
+      },
+      "after": {
+        "name": "Cocktailbitter",
+        "typical_abv": "40.00"
+      }
+    },
+    "garnish": {
+      "before": {
+        "name": "Garnituren",
+        "typical_abv": "0.00"
+      },
+      "after": {
+        "name": "Früchte, Kräuter und Garnituren",
+        "typical_abv": "0.00"
+      }
+    },
+    "gin": {
+      "before": {
+        "name": "Gin",
+        "typical_abv": "40.00"
+      },
+      "after": {
+        "name": "Gin",
+        "typical_abv": "40.00"
+      }
+    },
+    "juice": {
+      "before": {
+        "name": "Säfte",
+        "typical_abv": "0.00"
+      },
+      "after": {
+        "name": "Säfte und Nektare",
+        "typical_abv": "0.00"
+      }
+    },
+    "liqueur": {
+      "before": {
+        "name": "Liköre",
+        "typical_abv": "25.00"
+      },
+      "after": {
+        "name": "Liköre",
+        "typical_abv": "25.00"
+      }
+    },
+    "other": {
+      "before": {
+        "name": "Weitere Zutaten",
+        "typical_abv": null
+      },
+      "after": {
+        "name": "Weitere Zutaten",
+        "typical_abv": null
+      }
+    },
+    "rum": {
+      "before": {
+        "name": "Rum",
+        "typical_abv": "40.00"
+      },
+      "after": {
+        "name": "Rum",
+        "typical_abv": "40.00"
+      }
+    },
+    "soft": {
+      "before": {
+        "name": "Softdrinks",
+        "typical_abv": "0.00"
+      },
+      "after": {
+        "name": "Softdrinks",
+        "typical_abv": "0.00"
+      }
+    },
+    "syrup": {
+      "before": {
+        "name": "Sirupe",
+        "typical_abv": "0.00"
+      },
+      "after": {
+        "name": "Sirupe",
+        "typical_abv": "0.00"
+      }
+    },
+    "tequila": {
+      "before": {
+        "name": "Tequila",
+        "typical_abv": "40.00"
+      },
+      "after": {
+        "name": "Tequila und Mezcal",
+        "typical_abv": "40.00"
+      }
+    },
+    "vodka": {
+      "before": {
+        "name": "Wodka",
+        "typical_abv": "40.00"
+      },
+      "after": {
+        "name": "Wodka",
+        "typical_abv": "40.00"
+      }
+    },
+    "whisky": {
+      "before": {
+        "name": "Whisky",
+        "typical_abv": "40.00"
+      },
+      "after": {
+        "name": "Whisky",
+        "typical_abv": "40.00"
+      }
+    },
+    "wine": {
+      "before": {
+        "name": "Wein und Wermut",
+        "typical_abv": "16.00"
+      },
+      "after": {
+        "name": "Wein und Wermut",
+        "typical_abv": "16.00"
+      }
+    },
+    "brandy": {
+      "before": null,
+      "after": {
+        "name": "Brandy und Obstbrände",
+        "typical_abv": "40.00"
+      }
+    },
+    "spirits": {
+      "before": null,
+      "after": {
+        "name": "Weitere Spirituosen",
+        "typical_abv": null
+      }
+    },
+    "beer": {
+      "before": null,
+      "after": {
+        "name": "Bier und Cider",
+        "typical_abv": "5.00"
+      }
+    },
+    "dairy": {
+      "before": null,
+      "after": {
+        "name": "Milch, Rahm und Alternativen",
+        "typical_abv": "0.00"
+      }
+    },
+    "alcohol_free": {
+      "before": null,
+      "after": {
+        "name": "Alkoholfreie Alternativen",
+        "typical_abv": "0.00"
+      }
+    }
+  },
+  "ingredients": [
+    {
+      "id": "b83977bb-00c4-5f5b-aefe-7289d05f1511",
+      "before": {
+        "name": "Absolut Vodka",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Absolut Vodka",
+        "category_id": "vodka"
+      }
+    },
+    {
+      "id": "17c43764-b6a8-5339-887f-333c1bf0a858",
+      "before": {
+        "name": "Absolut Citron",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Absolut Citron",
+        "category_id": "vodka"
+      }
+    },
+    {
+      "id": "56b3c944-e65c-5afb-b4b6-735d0eaf5298",
+      "before": {
+        "name": "Absolut Kurant",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Absolut Kurant",
+        "category_id": "vodka"
+      }
+    },
+    {
+      "id": "70cd097b-d878-5e96-afea-d11a13ec7034",
+      "before": {
+        "name": "Absolut Peppar",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Absolut Peppar",
+        "category_id": "vodka"
+      }
+    },
+    {
+      "id": "77c6ff6c-30c6-577a-b120-a8d5f1f03ed0",
+      "before": {
+        "name": "Peach Vodka",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Peach Vodka",
+        "category_id": "vodka"
+      }
+    },
+    {
+      "id": "4112862b-d34a-58a1-bf20-62516b6cc0b8",
+      "before": {
+        "name": "Cranberry vodka",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cranberry vodka",
+        "category_id": "vodka"
+      }
+    },
+    {
+      "id": "e3637c93-b626-5c49-9f9d-54d611a3bec4",
+      "before": {
+        "name": "Jack Daniels",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Jack Daniels",
+        "category_id": "whisky"
+      }
+    },
+    {
+      "id": "0f48f570-748b-5918-b3f5-49ba4d8d23a3",
+      "before": {
+        "name": "Tennessee whiskey",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Tennessee whiskey",
+        "category_id": "whisky"
+      }
+    },
+    {
+      "id": "a718df3c-80e2-56be-a95b-94ddbbb6c56f",
+      "before": {
+        "name": "Crown Royal",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Crown Royal",
+        "category_id": "whisky"
+      }
+    },
+    {
+      "id": "a7c1cdf2-2ca5-5392-87bf-0c3b99858217",
+      "before": {
+        "name": "Wild Turkey",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Wild Turkey",
+        "category_id": "whisky"
+      }
+    },
+    {
+      "id": "0d713a62-ef7c-5cce-be87-ed32be2468fd",
+      "before": {
+        "name": "blackstrap rum",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "blackstrap rum",
+        "category_id": "rum"
+      }
+    },
+    {
+      "id": "e96c33d1-b41c-59c5-95b5-295ee1d942c6",
+      "before": {
+        "name": "Bacardi Limon",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Bacardi Limon",
+        "category_id": "rum"
+      }
+    },
+    {
+      "id": "51ed5096-36b2-5e92-8dd2-44492de11542",
+      "before": {
+        "name": "Grand Marnier",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Grand Marnier",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "5da38ae7-2cf5-550a-b63a-b5e02c2324a4",
+      "before": {
+        "name": "Benedictine",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Benedictine",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "8b32f71f-70ff-518b-a671-e1f14882c2da",
+      "before": {
+        "name": "Drambuie",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Drambuie",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "1bd65a1b-c510-5ff2-a04b-51c7b625fe6c",
+      "before": {
+        "name": "Creme de Mure",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Creme de Mure",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "bd0f7e90-f05d-5e35-8143-0a544592a305",
+      "before": {
+        "name": "Pisang Ambon",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Pisang Ambon",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "898247c8-c9b8-53b2-bd0b-505e9b30edb7",
+      "before": {
+        "name": "Kiwi liqueur",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Kiwi liqueur",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "527c2c96-3e97-5de0-9831-fcba31faa4a8",
+      "before": {
+        "name": "Butterscotch schnapps",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Butterscotch schnapps",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "942512ca-ff2e-5c75-8be8-ecb13c6f2770",
+      "before": {
+        "name": "Goldschlager",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Goldschlager",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "b64c39a2-e406-5e7a-acdf-d08b78186809",
+      "before": {
+        "name": "Strawberry schnapps",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Strawberry schnapps",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "3b8ba88d-fa91-5d80-a2ca-320e58e27ab3",
+      "before": {
+        "name": "Sloe gin",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Sloe gin",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "7c0b9a12-409a-5a96-bf47-3c3846eecc65",
+      "before": {
+        "name": "Southern Comfort",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Southern Comfort",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "7859556e-f9c3-539b-accd-4a7bc5f2603f",
+      "before": {
+        "name": "Whisky Likör",
+        "category_id": "whisky"
+      },
+      "after": {
+        "name": "Whisky Likör",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "a5c3afc3-39fb-5845-8d08-4c536ce28767",
+      "before": {
+        "name": "Malibu rum",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Malibu rum",
+        "category_id": "liqueur"
+      }
+    },
+    {
+      "id": "7b3c16f5-3834-50d4-84d1-438ac1955da3",
+      "before": {
+        "name": "Coconut syrup",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Coconut syrup",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "3af2f612-06bd-5353-865b-5a7aaba3b456",
+      "before": {
+        "name": "Mint syrup",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Mint syrup",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "08f2cb2e-f45d-5517-b81a-6e0bc6828638",
+      "before": {
+        "name": "Corn syrup",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Corn syrup",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "9a6a1a36-c3c5-5f73-bf08-5d8094cf95ad",
+      "before": {
+        "name": "Pineapple Syrup",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Pineapple Syrup",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "3cf6a8b3-5c6c-5b82-b481-93c7f5983709",
+      "before": {
+        "name": "Rosemary Syrup",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Rosemary Syrup",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "258fc5e8-3a4e-57aa-9941-bfb89515d548",
+      "before": {
+        "name": "Sirup of roses",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Sirup of roses",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "0507a164-46b1-5cd4-bb95-7623b6c55249",
+      "before": {
+        "name": "Blackcurrant cordial",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Blackcurrant cordial",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "c54fe13c-5124-5574-9a5c-745ab7d25628",
+      "before": {
+        "name": "Pomegranate juice",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Pomegranate juice",
+        "category_id": "juice"
+      }
+    },
+    {
+      "id": "37a96ed1-8725-5ca9-9b8b-c62211e4646b",
+      "before": {
+        "name": "Fruit juice",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Fruit juice",
+        "category_id": "juice"
+      }
+    },
+    {
+      "id": "e8d94888-fe54-56a8-afec-b1c75145cae9",
+      "before": {
+        "name": "Apricot Nectar",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Apricot Nectar",
+        "category_id": "juice"
+      }
+    },
+    {
+      "id": "d2ec8021-4823-5613-838f-8302fe86fab8",
+      "before": {
+        "name": "Peach nectar",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Peach nectar",
+        "category_id": "juice"
+      }
+    },
+    {
+      "id": "0a61a1ef-1779-549d-b064-6f1643f85def",
+      "before": {
+        "name": "Bitter lemon",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Bitter lemon",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "43290e64-0d18-51c5-8959-f0ca23f61090",
+      "before": {
+        "name": "Pepsi Cola",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Pepsi Cola",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "ad1547eb-c2e6-54d0-ad74-cddcc1ced36e",
+      "before": {
+        "name": "Dr. Pepper",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Dr. Pepper",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "94f91414-20d9-5578-921a-99e76d46de85",
+      "before": {
+        "name": "Mountain Dew",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Mountain Dew",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "6570c328-43fa-54d4-8906-97401a386111",
+      "before": {
+        "name": "Carbonated soft drink",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Carbonated soft drink",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "0f73f8e6-7588-522f-848e-024b61658ae6",
+      "before": {
+        "name": "Iced tea",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Iced tea",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "c4f8f691-4df9-5d09-9165-78c0de21ab43",
+      "before": {
+        "name": "Sarsaparilla",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Sarsaparilla",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "4279fbde-0b75-567e-af87-103e3767f663",
+      "before": {
+        "name": "Schweppes Russchian",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Schweppes Russchian",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "cdcecd28-cf45-5c1c-b5f8-d61aa863999c",
+      "before": {
+        "name": "Surge",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Surge",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "8bd2d4ac-2277-5f40-854a-18a1e0d55216",
+      "before": {
+        "name": "Kool-Aid",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Kool-Aid",
+        "category_id": "soft"
+      }
+    },
+    {
+      "id": "bf188061-4a67-52bb-a313-6fe46fad3233",
+      "before": {
+        "name": "Vermouth",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Vermouth",
+        "category_id": "wine"
+      }
+    },
+    {
+      "id": "5d90e41d-79e4-5c43-8294-f005230c9ae4",
+      "before": {
+        "name": "Wine",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Wine",
+        "category_id": "wine"
+      }
+    },
+    {
+      "id": "c2fe8837-adff-51d1-8060-fc164a6689fb",
+      "before": {
+        "name": "Dubonnet Rouge",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Dubonnet Rouge",
+        "category_id": "wine"
+      }
+    },
+    {
+      "id": "f587a2d2-4f49-5288-9b8c-78a85fbfaa40",
+      "before": {
+        "name": "Lillet",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Lillet",
+        "category_id": "wine"
+      }
+    },
+    {
+      "id": "2d787f2f-cae6-574a-a180-3440000090c3",
+      "before": {
+        "name": "Peach Bitters",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Peach Bitters",
+        "category_id": "bitters"
+      }
+    },
+    {
+      "id": "2f1d4be4-0436-5a61-b01d-592a31a64c75",
+      "before": {
+        "name": "Bitters",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Bitters",
+        "category_id": "bitters"
+      }
+    },
+    {
+      "id": "09648629-3b62-5674-9107-b2cfaec28640",
+      "before": {
+        "name": "Lime peel",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Lime peel",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "fb25bb49-7b27-501c-b080-a02e6f26fcd5",
+      "before": {
+        "name": "Orange spiral",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Orange spiral",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "9b237055-c661-5525-9c42-009d5f9ab002",
+      "before": {
+        "name": "Olive",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Olive",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "0ad567bf-dc34-5653-93b4-728b3bfd76df",
+      "before": {
+        "name": "Banana",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Banana",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "e8876b9b-49b9-519c-a590-d9f093c0ad03",
+      "before": {
+        "name": "Blackberries",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Blackberries",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "8beba2f4-4a38-51f0-a95b-c30057535c80",
+      "before": {
+        "name": "Cherry",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cherry",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "0aa71876-a696-56d1-9d15-9826dd56c88f",
+      "before": {
+        "name": "Figs",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Figs",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "50ca7c54-9a12-5ac2-9433-8f9f953c8c0f",
+      "before": {
+        "name": "Kiwi",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Kiwi",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "d73ca916-7ddb-597c-a2f3-69061c736041",
+      "before": {
+        "name": "Mango",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Mango",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "0fbaf068-16be-55be-b0ff-fdae0e449b65",
+      "before": {
+        "name": "Papaya",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Papaya",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "6449d46d-fb58-5f34-ae1f-d031bc6d6d55",
+      "before": {
+        "name": "Pineapple",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Pineapple",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "d2b2207d-ca25-5192-9616-f0e27c88cd6a",
+      "before": {
+        "name": "Fruit",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Fruit",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "615fc694-d7b4-5b2b-9739-f7d4dc0355d4",
+      "before": {
+        "name": "Rosemary",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Rosemary",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "25ca853c-fce8-53ef-8ff5-80a8da04e5b9",
+      "before": {
+        "name": "Thyme",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Thyme",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "a68cd88e-d7e8-5045-b6ad-46db1aed4c04",
+      "before": {
+        "name": "Lavender",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Lavender",
+        "category_id": "garnish"
+      }
+    },
+    {
+      "id": "cfa5f73e-02cf-5309-b77c-c7d53eaa8603",
+      "before": {
+        "name": "Powdered sugar",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Powdered sugar",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "de90b4b7-71ba-5113-a1c0-3bf29f453528",
+      "before": {
+        "name": "Butter",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Butter",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "2df14186-7689-5966-8c64-332413818f42",
+      "before": {
+        "name": "Almond flavoring",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Almond flavoring",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "2f74803a-fd1c-5e4c-810e-fbb72f223332",
+      "before": {
+        "name": "Anis",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Anis",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "6866f8d7-a6cd-59eb-8e26-57661af4e8b9",
+      "before": {
+        "name": "Black pepper",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Black pepper",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "9dbcca9d-e1b6-510c-8888-e6fd375a7a57",
+      "before": {
+        "name": "Cardamom",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cardamom",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "2a50620c-3121-56a2-9f5b-7a2caf457bfa",
+      "before": {
+        "name": "Cayenne pepper",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cayenne pepper",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "a93bf464-730f-51da-9fc2-095d22ab3d32",
+      "before": {
+        "name": "Cloves",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cloves",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "76835e49-1225-5d82-90fb-3a203522c6c5",
+      "before": {
+        "name": "Cumin seed",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cumin seed",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "866e36fe-b89e-5977-82bd-abb5eed3047d",
+      "before": {
+        "name": "Nutmeg",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Nutmeg",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "1d254a1b-ae3f-5427-b6b7-9b893df34181",
+      "before": {
+        "name": "Pepper",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Pepper",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "03602559-69c7-5b5c-aa07-398f4db1b69d",
+      "before": {
+        "name": "Red Chili Flakes",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Red Chili Flakes",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "0b8e76f9-7e4a-5e40-87d8-2ca812787b9a",
+      "before": {
+        "name": "Vanilla",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Vanilla",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "8f48ddf5-648c-54ae-af5a-b0c2225e81ad",
+      "before": {
+        "name": "Tea",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Tea",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "3f806dc0-f14d-555a-a819-99ce6a40e3f7",
+      "before": {
+        "name": "Hot Chocolate",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Hot Chocolate",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "9a1a8d4c-30ba-5131-8420-adc375a72ee6",
+      "before": {
+        "name": "Chocolate",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Chocolate",
+        "category_id": "basic"
+      }
+    },
+    {
+      "id": "dc4d4f87-6d56-569f-a477-2fee8a64140a",
+      "before": {
+        "name": "Cognac",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cognac",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "e2d1ceca-9582-5574-b0fb-9c3086dccd2f",
+      "before": {
+        "name": "Brandy",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Brandy",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "f94941cc-6bda-5efd-8a85-4497e9984c39",
+      "before": {
+        "name": "Grapa",
+        "category_id": "wine"
+      },
+      "after": {
+        "name": "Grappa",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "423bbf13-d21e-5a74-b26b-76109d5189e4",
+      "before": {
+        "name": "Kirsch",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Kirsch",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "e7073be9-aa4d-5444-a6d5-a12af862b302",
+      "before": {
+        "name": "Williams",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Williams",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "8c498c25-8d37-5391-91ca-ed20da8bf4fa",
+      "before": {
+        "name": "Calvados",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Calvados",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "db2140db-b1f8-517d-81f4-636e1944648d",
+      "before": {
+        "name": "Apfelbrand",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Apfelbrand",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "9ec15343-3324-5929-a794-5b834aeb6cf6",
+      "before": {
+        "name": "Pisco",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Pisco",
+        "category_id": "brandy"
+      }
+    },
+    {
+      "id": "144ac145-b660-5900-8af3-8a7725ce1fb9",
+      "before": {
+        "name": "Absinth",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Absinth",
+        "category_id": "spirits"
+      }
+    },
+    {
+      "id": "c79d52c4-abd1-5545-9eed-52a38bd6b96e",
+      "before": {
+        "name": "Ouzo",
+        "category_id": "wine"
+      },
+      "after": {
+        "name": "Ouzo",
+        "category_id": "spirits"
+      }
+    },
+    {
+      "id": "a0362ea2-57c0-569e-a5af-ce9973fdf27e",
+      "before": {
+        "name": "Ricard",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Ricard",
+        "category_id": "spirits"
+      }
+    },
+    {
+      "id": "7ca14ec4-25b8-55ff-ba5f-95f6837c14ad",
+      "before": {
+        "name": "Cachaça",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cachaça",
+        "category_id": "spirits"
+      }
+    },
+    {
+      "id": "52042b8b-acfb-5cbd-9606-8ea0689853e4",
+      "before": {
+        "name": "Everclear",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Everclear",
+        "category_id": "spirits"
+      }
+    },
+    {
+      "id": "f8ada26f-cec9-5745-9f7b-2e8d1973eb9d",
+      "before": {
+        "name": "Grain alcohol",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Grain alcohol",
+        "category_id": "spirits"
+      }
+    },
+    {
+      "id": "51db7a64-14f8-5d00-8751-8a3a50ff66da",
+      "before": {
+        "name": "Bier",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Bier",
+        "category_id": "beer"
+      }
+    },
+    {
+      "id": "b399cf33-8a0a-536c-9c33-bb5da8633f8f",
+      "before": {
+        "name": "Lager",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Lager",
+        "category_id": "beer"
+      }
+    },
+    {
+      "id": "26eef27d-5f71-511e-aaa8-5d679e0d1bb0",
+      "before": {
+        "name": "Guinness stout",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Guinness stout",
+        "category_id": "beer"
+      }
+    },
+    {
+      "id": "8e2e6538-8135-5b35-a7cf-d72ff42951bf",
+      "before": {
+        "name": "Corona",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Corona",
+        "category_id": "beer"
+      }
+    },
+    {
+      "id": "a4e7f7a1-528f-513f-bfb5-81e97ada05e6",
+      "before": {
+        "name": "Cider",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Cider",
+        "category_id": "beer"
+      }
+    },
+    {
+      "id": "343872a8-aa63-5d6d-b6cf-2fb4518f9b1d",
+      "before": {
+        "name": "Milch",
+        "category_id": "basic"
+      },
+      "after": {
+        "name": "Milch",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "8300d889-264c-5842-b41b-8a0f18633d0f",
+      "before": {
+        "name": "Rahm",
+        "category_id": "basic"
+      },
+      "after": {
+        "name": "Rahm",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "b00293e3-dec1-5f44-bbe0-310ee1da591d",
+      "before": {
+        "name": "Kokosmilch",
+        "category_id": "basic"
+      },
+      "after": {
+        "name": "Kokosmilch",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "7f149977-6c0a-5f3d-b00a-6ba375807f17",
+      "before": {
+        "name": "Kokosrahm",
+        "category_id": "basic"
+      },
+      "after": {
+        "name": "Kokosrahm",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "5de38d19-d250-5084-917d-7fefce5e095d",
+      "before": {
+        "name": "Gesüsste Kondensmilch",
+        "category_id": "basic"
+      },
+      "after": {
+        "name": "Gesüsste Kondensmilch",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "362b3d0f-38aa-5826-b9fb-67ac6f7b88a4",
+      "before": {
+        "name": "Half-and-half",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Half-and-half",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "d53c662f-6f28-5d1b-9a84-70c88d97c587",
+      "before": {
+        "name": "Light cream",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Light cream",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "a27bb85a-0346-522b-9bcf-4d9335e94c4f",
+      "before": {
+        "name": "Whipped cream",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Whipped cream",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "41293901-6758-5e6d-9c62-10dda8c874e1",
+      "before": {
+        "name": "Whipping cream",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Whipping cream",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "29431fdc-33b7-5ad0-9870-aede624b0671",
+      "before": {
+        "name": "Yoghurt",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Yoghurt",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "5d63ce54-c535-54f0-b602-1f15b5a77ba9",
+      "before": {
+        "name": "Cream of Coconut",
+        "category_id": "basic"
+      },
+      "after": {
+        "name": "Cream of Coconut",
+        "category_id": "dairy"
+      }
+    },
+    {
+      "id": "d40754a0-b55b-51c5-be03-5750ce4765a0",
+      "before": {
+        "name": "Alkoholfreie Gin-Alternative",
+        "category_id": "soft"
+      },
+      "after": {
+        "name": "Alkoholfreie Gin-Alternative",
+        "category_id": "alcohol_free"
+      }
+    },
+    {
+      "id": "97b80272-5f66-50c2-9af6-bbfc8dab13b4",
+      "before": {
+        "name": "Alkoholfreie Rum-Alternative",
+        "category_id": "soft"
+      },
+      "after": {
+        "name": "Alkoholfreie Rum-Alternative",
+        "category_id": "alcohol_free"
+      }
+    },
+    {
+      "id": "ac455744-be05-57c6-9eac-9ab7c75b9c10",
+      "before": {
+        "name": "Alkoholfreier Aperitif",
+        "category_id": "soft"
+      },
+      "after": {
+        "name": "Alkoholfreier Aperitif",
+        "category_id": "alcohol_free"
+      }
+    },
+    {
+      "id": "78e96d16-2365-5bff-9ef4-ea2126627132",
+      "before": {
+        "name": "Mezcal",
+        "category_id": "other"
+      },
+      "after": {
+        "name": "Mezcal",
+        "category_id": "tequila"
+      }
+    },
+    {
+      "id": "c4b85dec-809a-5722-a190-f44b409c2106",
+      "before": {
+        "name": "Yuzu",
+        "category_id": "syrup"
+      },
+      "after": {
+        "name": "Yuzusirup",
+        "category_id": "syrup"
+      }
+    },
+    {
+      "id": "0602f071-8ea8-5355-890a-823fd45425c2",
+      "before": {
+        "name": "Wild Strawberry",
+        "category_id": "gin"
+      },
+      "after": {
+        "name": "Erdbeer-Gin",
+        "category_id": "gin"
+      }
+    }
+  ],
+  "new_ingredients": [
+    {
+      "id": "9fb50803-9835-5430-afa7-f49ec6584cce",
+      "name": "Limoncello",
+      "category_id": "liqueur"
+    },
+    {
+      "id": "302bb093-fd7b-5030-98c4-659adf8a191b",
+      "name": "Passionsfruchtlikör",
+      "category_id": "liqueur"
+    },
+    {
+      "id": "586785d3-6e46-57ff-88f7-72932ec3b4f9",
+      "name": "Trojka Red",
+      "category_id": "liqueur"
+    },
+    {
+      "id": "0b4e8678-e3c0-511e-a1d5-ee47768e1e7b",
+      "name": "Trojka Green",
+      "category_id": "liqueur"
+    },
+    {
+      "id": "73ba105d-758f-56dd-b487-41eacd9ffd17",
+      "name": "Trojka Sun",
+      "category_id": "liqueur"
+    }
+  ],
+  "products": [
+    {
+      "id": "147dc46a-d76c-54d0-b0e1-3cd5c0fed95c",
+      "name": "Malibu Liqueur",
+      "barcode": "8410024700015",
+      "before": "43574ae7-2e1b-575c-afdc-f823a612437a",
+      "after": "03205537-261e-568b-aec7-2e325a3f4e23"
+    },
+    {
+      "id": "2a246cb2-0732-55d5-912f-54d47c38d5db",
+      "name": "Studer kirsch creux",
+      "barcode": "7610621501072",
+      "before": "e73d15d4-30ac-5335-ad52-f5f9e58048df",
+      "after": "423bbf13-d21e-5a74-b26b-76109d5189e4"
+    },
+    {
+      "id": "61d2fe65-84bc-5534-8051-5b49dd470d4a",
+      "name": "Sun",
+      "barcode": "7617700599432",
+      "before": "f691e2a6-f4dc-5c28-92e4-d49c91af652f",
+      "after": "73ba105d-758f-56dd-b487-41eacd9ffd17"
+    },
+    {
+      "id": "6fad569b-4393-5409-b5b6-32742f028d5a",
+      "name": "Celestino Limoncello",
+      "barcode": "8437013003056",
+      "before": "95396a31-3ef3-57e4-bfff-cee0ca8f316f",
+      "after": "9fb50803-9835-5430-afa7-f49ec6584cce"
+    },
+    {
+      "id": "b84ec4ec-5457-52d8-bdbf-7254178649b5",
+      "name": "Trojka rouge",
+      "barcode": "7617700596806",
+      "before": "0c275273-141b-5e98-8847-6585a68047e5",
+      "after": "586785d3-6e46-57ff-88f7-72932ec3b4f9"
+    },
+    {
+      "id": "c4d4d588-9f49-5f01-bc19-683d69a27693",
+      "name": "Passoa Frucht Likör",
+      "barcode": "3035540001740",
+      "before": "95396a31-3ef3-57e4-bfff-cee0ca8f316f",
+      "after": "302bb093-fd7b-5030-98c4-659adf8a191b"
+    },
+    {
+      "id": "dbca3e64-e7d0-525c-8dab-60455bc023e3",
+      "name": "Limoncello",
+      "barcode": "4262518180797",
+      "before": "95396a31-3ef3-57e4-bfff-cee0ca8f316f",
+      "after": "9fb50803-9835-5430-afa7-f49ec6584cce"
+    },
+    {
+      "id": "fa692744-3179-5db9-8cb1-a70acceb9072",
+      "name": "Trojka green",
+      "barcode": "7617700590408",
+      "before": "0c275273-141b-5e98-8847-6585a68047e5",
+      "after": "0b4e8678-e3c0-511e-a1d5-ee47768e1e7b"
+    }
+  ],
+  "optional_automatic": [
+    {
+      "id": "06fdea3b-c0aa-5ba4-bf57-8a3d21ecbd8e",
+      "name": "Tequila"
+    },
+    {
+      "id": "0c275273-141b-5e98-8847-6585a68047e5",
+      "name": "Wodka"
+    },
+    {
+      "id": "19cff9ad-83e6-5148-b311-726e192f1f70",
+      "name": "Blue Curaçao"
+    },
+    {
+      "id": "202f3fc4-7a9b-573a-be44-41c952580778",
+      "name": "Nuss Likör"
+    },
+    {
+      "id": "32703221-5cd1-5ba8-8af1-e28fdc7d075b",
+      "name": "Sarti"
+    },
+    {
+      "id": "38449158-b9d4-56d2-8338-23f71fbe312a",
+      "name": "Weisswein"
+    },
+    {
+      "id": "41288384-24b0-575d-9e2d-87e8aa43635b",
+      "name": "Campari"
+    },
+    {
+      "id": "423bbf13-d21e-5a74-b26b-76109d5189e4",
+      "name": "Kirsch"
+    },
+    {
+      "id": "43574ae7-2e1b-575c-afdc-f823a612437a",
+      "name": "Kokosrum"
+    },
+    {
+      "id": "495f9ca3-4564-527e-8de2-0036821ebaa4",
+      "name": "Alpen Kräuter Gin"
+    },
+    {
+      "id": "4a3ddccc-292f-54fd-8d40-c514e4e1cf09",
+      "name": "Irish Cream"
+    },
+    {
+      "id": "51ed5096-36b2-5e92-8dd2-44492de11542",
+      "name": "Grand Marnier"
+    },
+    {
+      "id": "5b034c67-60c5-5e0c-ad33-50650f70001e",
+      "name": "Weisser süsser Wermut"
+    },
+    {
+      "id": "64248c9e-4c6b-5a57-9284-14a7b83a2c86",
+      "name": "Prosecco"
+    },
+    {
+      "id": "6fb62f11-8990-53e8-b648-4d382bacdbe4",
+      "name": "Aperol"
+    },
+    {
+      "id": "73b3094e-1ffa-51ba-b7bb-e9ba0170b836",
+      "name": "Scotch"
+    },
+    {
+      "id": "7c0b9a12-409a-5a96-bf47-3c3846eecc65",
+      "name": "Southern Comfort"
+    },
+    {
+      "id": "81b76717-462a-51c0-a403-30d08a4b135a",
+      "name": "Amaretto"
+    },
+    {
+      "id": "872deed1-10cc-5d0a-be68-e750a0b25a32",
+      "name": "Bourbon"
+    },
+    {
+      "id": "88f64ade-9bac-55d1-91f6-428fbb988cad",
+      "name": "Gin"
+    },
+    {
+      "id": "8c498c25-8d37-5391-91ca-ed20da8bf4fa",
+      "name": "Calvados"
+    },
+    {
+      "id": "9afdf94f-2931-5f2c-b102-ed3570ffbfa5",
+      "name": "Weisser Rum"
+    },
+    {
+      "id": "a5c3afc3-39fb-5845-8d08-4c536ce28767",
+      "name": "Malibu rum"
+    },
+    {
+      "id": "a5e23a4b-baff-5b1c-b438-83853267e9dc",
+      "name": "Gereifter Rum"
+    },
+    {
+      "id": "ad4da432-9a0a-53cd-8f52-e7a399eb490b",
+      "name": "Sherry"
+    },
+    {
+      "id": "b27c4602-a381-5117-bfea-a155c1f3c963",
+      "name": "Monacco Orange Gin"
+    },
+    {
+      "id": "b9a3dda0-83fb-596d-9480-5cba8bfd2e65",
+      "name": "Trockener Wermut"
+    },
+    {
+      "id": "c2c681e0-b9d9-5ffa-ac1b-f5694f66322b",
+      "name": "Goldener Rum"
+    },
+    {
+      "id": "c79d52c4-abd1-5545-9eed-52a38bd6b96e",
+      "name": "Ouzo"
+    },
+    {
+      "id": "d876bf85-9425-5cbe-8a09-55fe97240473",
+      "name": "Rum"
+    },
+    {
+      "id": "dc4d4f87-6d56-569f-a477-2fee8a64140a",
+      "name": "Cognac"
+    },
+    {
+      "id": "e3637c93-b626-5c49-9f9d-54d611a3bec4",
+      "name": "Jack Daniels"
+    },
+    {
+      "id": "e7073be9-aa4d-5444-a6d5-a12af862b302",
+      "name": "Williams"
+    },
+    {
+      "id": "e73d15d4-30ac-5335-ad52-f5f9e58048df",
+      "name": "Kirschlikör"
+    },
+    {
+      "id": "e9ca9232-098e-5418-a4ff-45673ce3fb42",
+      "name": "Dunkler Rum"
+    },
+    {
+      "id": "f4c9ef25-0732-57a6-83db-64cce05bb55b",
+      "name": "Sake"
+    },
+    {
+      "id": "f587a2d2-4f49-5288-9b8c-78a85fbfaa40",
+      "name": "Lillet"
+    }
+  ],
+  "review": [
+    "Crema de verduras / GutBio: Etikett und Barcode prüfen; keine vermutete Ersatzidentität setzen.",
+    "Kontiki, Mirto, Mela Verde und Stroh: spezifische Zutat nach Etikett bestimmen.",
+    "Apice/Aperol, Lemon Bull/Wodka und Eristoff Pink/Erdbeerlikör: Gleichwertigkeit prüfen.",
+    "Fehlende ABV-Werte nur anhand der konkreten Flasche ergänzen.",
+    "Disaronno/Disarono: unterschiedliche Barcodes, keine automatische Zusammenführung.",
+    "Synonyme und Ersatzregeln nicht exportiert: keine automatische Zusammenführung bestehender Zutaten."
+  ]
+}
