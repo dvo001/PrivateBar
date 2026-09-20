@@ -13,6 +13,17 @@ final class Projector
 
     public function validate(string $entity, string $id, array $p, bool $fromDevice): array
     {
+        if ($entity === 'category') {
+            if ($fromDevice) {
+                throw ValidationException::withMessages(['entity' => 'Kategorien werden ausschliesslich auf Cyon verwaltet.']);
+            }
+            Validator::make(['id' => $id], ['id' => 'required|string|max:40'])->validate();
+
+            return Validator::make($p, [
+                'name' => 'required|string|max:255',
+                'typical_abv' => 'nullable|numeric|between:0,100',
+            ])->validate();
+        }
         if ($entity === 'setting') {
             if (! in_array($p['key'] ?? null, self::SHARED_KEYS, true) || $id !== Settings::sharedId($p['key'])) {
                 throw ValidationException::withMessages(['entity' => 'Diese Einstellung darf nicht synchronisiert werden.']);
@@ -67,6 +78,12 @@ final class Projector
         }
         $now = now();
         switch ($entity) {
+            case 'category':
+                DB::table('ingredient_categories')->updateOrInsert(
+                    ['id' => $id],
+                    $p
+                );
+                break;
             case 'product':
                 $ingredient = $p['ingredient_id'];
                 $present = $p['present'];

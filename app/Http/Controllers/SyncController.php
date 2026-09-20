@@ -32,7 +32,7 @@ final class SyncController
     public function media(Request $request)
     {
         $this->device($request);
-        $data = $request->validate(['path' => 'required|regex:~^(recipes|products)/[a-f0-9]{64}\\.webp$~D', 'content' => 'sometimes|required|string|max:4194304']);
+        $data = $request->validate(['path' => ['required', 'string', 'regex:~^(recipes|products)/[a-f0-9]{64}\\.webp$~D'], 'content' => 'sometimes|required|string|max:4194304']);
         if ($request->isMethod('post')) {
             $bytes = base64_decode($data['content'] ?? '', true);
             $hash = pathinfo(basename($data['path']), PATHINFO_FILENAME);

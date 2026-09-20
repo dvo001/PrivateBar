@@ -394,3 +394,15 @@ Cyon-Hosting-Backup und eine physische Pi-Instanz abgenommen.
 Die aktuelle Anleitung für Cyon ohne SSH und den anschliessenden Pi-Wechsel steht
 in [UPDATE-1.0.2.md](UPDATE-1.0.2.md). Der gezielte IngredientCatalogSeeder ergänzt
 fehlende Zutaten und Synonyme ohne erneute Erstinstallation.
+
+## Update 1.0.3: Kategorien im Cyon-Pi-Abgleich
+
+Version 1.0.3 ergänzt den Cyon-führenden Abgleich von Zutatenkategorien und
+behebt die fehlerhafte Medienpfad-Validierung. Die drei Pakete und die
+Schrittfolge stehen in [UPDATE-1.0.3.md](UPDATE-1.0.3.md). Es gibt keine neue
+Datenbankmigration. Für den Pi liegt zusätzlich
+`deploy/pi/install-release.sh` bei. Das Skript entpackt das Tarball in einen
+neuen Release, prüft `optimize` und `privatebar:health`, schaltet danach
+`current` atomar um und protokolliert jeden Lauf unter `shared/storage/logs/`.
+Die Freigabe für echte Zielsysteme bleibt bis zur getrennten Cyon-/Pi-Abnahme
+gesperrt.

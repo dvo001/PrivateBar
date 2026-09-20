@@ -6,6 +6,7 @@ use App\Domain\Settings\Settings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 final class SyncServer
 {
@@ -30,6 +31,9 @@ final class SyncServer
             }
             $accepted = [];
             foreach ($request['events'] as $event) {
+                if ($event['entity'] === 'category') {
+                    throw ValidationException::withMessages(['entity' => 'Kategorien werden auf Cyon verwaltet und vom Pi nur empfangen.']);
+                }
                 $existing = DB::table('sync_events')->where('id', $event['id'])->first();
                 if ($existing) {
                     abort_unless($existing->origin === 'device:'.$device->id, 409, 'Der Idempotenzschlüssel gehört zu einem anderen Ursprung.');
@@ -53,9 +57,14 @@ final class SyncServer
 
                 return (array) $row;
             })->all();
+            // Kategorien sind Stammdaten. Sie werden zusätzlich zum Cursorstand
+            // mitgegeben, damit ein älterer Zutaten-Event nie an einer später
+            // veröffentlichten Kategorie scheitert.
+            $categories = DB::table('ingredient_categories')->orderBy('id')->get(['id', 'name', 'typical_abv'])
+                ->map(fn ($category) => (array) $category)->all();
             DB::table('devices')->where('id', $device->id)->update(['last_seen_at' => now()]);
 
-            return ['schema_version' => 1, 'epoch' => $server->epoch, 'accepted' => $accepted, 'events' => $events, 'cursor' => $rows->last()->sequence ?? $request['cursor'], 'has_more' => $rows->count() === 100];
+            return ['schema_version' => 1, 'epoch' => $server->epoch, 'accepted' => $accepted, 'categories' => $categories, 'events' => $events, 'cursor' => $rows->last()->sequence ?? $request['cursor'], 'has_more' => $rows->count() === 100];
         });
     }
 }

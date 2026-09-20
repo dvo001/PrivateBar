@@ -66,6 +66,12 @@ final class SyncClient
                     if (DB::table('sync_events')->whereNull('confirmed_at')->exists()) {
                         return true;
                     }
+                    foreach ($result['categories'] ?? [] as $category) {
+                        $categoryId = (string) ($category['id'] ?? '');
+                        $payload = ['name' => $category['name'] ?? null, 'typical_abv' => $category['typical_abv'] ?? null];
+                        $validCategory = $this->projector->validate('category', $categoryId, $payload, false);
+                        $this->projector->apply('category', $categoryId, $validCategory);
+                    }
                     foreach ($result['events'] as $event) {
                         if (DB::table('sync_inbox')->where('event_id', $event['id'])->exists()) {
                             continue;

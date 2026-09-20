@@ -103,6 +103,9 @@ Artisan::command('privatebar:publish-catalog', function () {
     }
     app(Settings::class)->assertRunning();
     DB::transaction(function () {
+        foreach (DB::table('ingredient_categories')->orderBy('id')->get() as $category) {
+            app(Journal::class)->record('category', $category->id, ['name' => $category->name, 'typical_abv' => $category->typical_abv]);
+        }
         foreach (DB::table('ingredients')->get() as $i) {
             app(Journal::class)->record('ingredient', $i->id, ['name' => $i->name, 'category_id' => $i->category_id, 'automatic' => (bool) $i->automatic]);
         }
@@ -197,6 +200,9 @@ Artisan::command('privatebar:publish-state', function () {
         app(Settings::class)->assertRunning();
         $start = (int) DB::table('sync_events')->max('sequence');
         $journal = app(Journal::class);
+        foreach (DB::table('ingredient_categories')->orderBy('id')->get() as $category) {
+            $journal->record('category', $category->id, ['name' => $category->name, 'typical_abv' => $category->typical_abv]);
+        }
         foreach (DB::table('ingredients')->get() as $i) {
             $journal->record('ingredient', $i->id, ['name' => $i->name, 'category_id' => $i->category_id, 'automatic' => (bool) $i->automatic, 'synonyms' => DB::table('ingredient_synonyms')->where('ingredient_id', $i->id)->pluck('name')->all()]);
         }

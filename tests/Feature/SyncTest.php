@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Domain\Sync\Projector;
+use App\Domain\Sync\SyncClient;
 use App\Domain\Sync\SyncServer;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -63,6 +66,34 @@ final class SyncTest extends TestCase
         app(Projector::class)->validate('setting', 'smb_password', ['value' => 'secret'], true);
     }
 
+    public function test_cyon_category_events_are_applied_before_ingredients_on_pi(): void
+    {
+        config(['privatebar.mode' => 'pi', 'privatebar.device_token' => 'test-device', 'privatebar.cloud_url' => 'https://cloud.example.test']);
+        $categoryId = 'house-specials';
+        $ingredientId = (string) Str::uuid();
+        $epoch = (string) Str::uuid();
+        $category = ['id' => (string) Str::uuid(), 'sequence' => 1, 'entity' => 'category', 'entity_id' => $categoryId,
+            'payload' => ['name' => 'Hausmischungen', 'typical_abv' => null], 'deleted' => false, 'version' => 1, 'actor' => 'system:cyon'];
+        $ingredient = ['id' => (string) Str::uuid(), 'sequence' => 2, 'entity' => 'ingredient', 'entity_id' => $ingredientId,
+            'payload' => ['name' => 'Hausmischung', 'category_id' => $categoryId, 'automatic' => false, 'synonyms' => []], 'deleted' => false, 'version' => 2, 'actor' => 'system:cyon'];
+        Http::fake(['cloud.example.test/api/v1/sync' => Http::response(['schema_version' => 1, 'epoch' => $epoch, 'accepted' => [], 'events' => [$category, $ingredient], 'cursor' => 2, 'has_more' => false])]);
+        app(SyncClient::class)->run();
+        self::assertDatabaseHas('ingredient_categories', ['id' => $categoryId, 'name' => 'Hausmischungen']);
+        self::assertDatabaseHas('ingredients', ['id' => $ingredientId, 'category_id' => $categoryId]);
+    }
+
+    public function test_pi_cannot_upload_or_change_categories(): void
+    {
+        config(['privatebar.mode' => 'cloud']);
+        $categoryId = 'house-specials';
+        $event = ['id' => (string) Str::uuid(), 'entity' => 'category', 'entity_id' => $categoryId,
+            'payload' => ['name' => 'Hausmischungen', 'typical_abv' => null], 'deleted' => false];
+        $this->withServerVariables(['HTTPS' => 'on'])->withToken('test-device')
+            ->postJson('https://localhost/api/v1/sync', ['schema_version' => 1, 'cursor' => 0, 'events' => [$event]])
+            ->assertUnprocessable()->assertJsonValidationErrors('entity');
+        self::assertDatabaseMissing('ingredient_categories', ['id' => $categoryId]);
+    }
+
     public function test_device_may_not_impersonate_member_rating_or_import_owner(): void
     {
         $this->expectException(ValidationException::class);
@@ -80,6 +111,36 @@ final class SyncTest extends TestCase
         self::assertGreaterThan(20, DB::table('sync_events')->count());
         foreach (DB::table('sync_events')->get() as $event) {
             $projector->validate($event->entity, $event->entity_id, json_decode($event->payload, true), false);
+        }
+    }
+
+    public function test_media_upload_and_download_accept_both_image_directories(): void
+    {
+        Storage::fake('local');
+        $image = imagecreatetruecolor(2, 2);
+        ob_start();
+        imagewebp($image);
+        $bytes = ob_get_clean();
+        imagedestroy($image);
+        $this->withServerVariables(['HTTPS' => 'on'])->withToken('test-device');
+        foreach (['recipes', 'products'] as $directory) {
+            $path = $directory.'/'.hash('sha256', $bytes).'.webp';
+            $this->postJson('https://localhost/api/v1/media', ['path' => $path, 'content' => base64_encode($bytes)])
+                ->assertOk()->assertJsonPath('stored', true);
+            self::assertSame($bytes, Storage::disk('local')->get($path));
+            $response = $this->get('https://localhost/api/v1/media?'.http_build_query(['path' => $path]));
+            $response->assertOk()->assertHeader('Content-Type', 'image/webp');
+            self::assertSame($bytes, file_get_contents($response->baseResponse->getFile()->getPathname()));
+        }
+    }
+
+    public function test_media_rejects_invalid_paths_with_validation_errors(): void
+    {
+        $this->withServerVariables(['HTTPS' => 'on'])->withToken('test-device');
+        $hash = str_repeat('a', 64);
+        foreach (['../.env', 'photos/'.$hash.'.webp', 'recipes/'.$hash.'Xwebp', 'recipes/'.$hash.'.webp'."\nx", 'recipes/short.webp'] as $path) {
+            $this->getJson('https://localhost/api/v1/media?'.http_build_query(['path' => $path]))
+                ->assertUnprocessable()->assertJsonValidationErrors('path');
         }
     }
 

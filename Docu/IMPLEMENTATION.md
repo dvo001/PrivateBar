@@ -1,6 +1,6 @@
 # Umsetzungsstand
 
-Stand: 6. September 2026, Version 1.0.2. Die Anwendung ist implementiert und lokal geprüft.
+Stand: 18. September 2026, Version 1.0.3. Die Anwendung ist implementiert und lokal geprüft.
 Eine Produktionsfreigabe gemäss AGENTS.md ist damit noch nicht erteilt.
 
 ## Implementiert
@@ -165,3 +165,19 @@ Keine Ausführung auf Cyon/Pi und keine Produktionsfreigabe.
 Unter «Machbar» enthält das Suchformular nur «Menü suchen», «Alkohol» und
 «Sortierung». Die übrigen Suchansichten verwenden weiterhin ihre bisherigen
 Filter. Die Machbarkeitsbeschränkung wird weiterhin serverseitig gesetzt.
+
+## Kategorien im Abgleich: Cyon → Pi
+
+Zutatenkategorien werden jetzt als Stammdaten vom Cyon an den Pi gespiegelt.
+Cyon bleibt führend; der Pi weist Kategorieänderungen zurück. Jede Sync-Antwort
+enthält zusätzlich den vollständigen aktuellen Kategorienbestand, sodass auch
+ältere Zutatenereignisse nachträglich validiert werden können. Kategorien werden
+vor Zutaten angewendet. Die API-Version bleibt 1.
+
+## Bildabgleich: Regex-Korrektur am 18. September 2026
+
+Die Pfadvalidierung von `/api/v1/media` verwendet eine Array-Regel, damit
+Laravel die Verzeichnisalternative `recipes|products` nicht als Regeltrenner
+behandelt. Der zuvor reproduzierte HTTP-500-Fehler wird damit behoben.
+Anleitung: [KORREKTUR-BILDSYNC.md](KORREKTUR-BILDSYNC.md).
+Cyon-/Pi-Ausführung und tatsächlicher Bildabgleich bleiben ausstehend.

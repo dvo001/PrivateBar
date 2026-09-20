@@ -39,6 +39,21 @@ final class SyncClientTest extends TestCase
         self::assertNotNull(app(Settings::class)->get('sync_last_success'));
     }
 
+    public function test_pull_bootstraps_cyon_categories_before_an_older_ingredient_event(): void
+    {
+        $categoryId = 'house-specials';
+        $ingredientId = (string) Str::uuid();
+        $epoch = (string) Str::uuid();
+        $event = ['id' => (string) Str::uuid(), 'sequence' => 1, 'entity' => 'ingredient', 'entity_id' => $ingredientId,
+            'payload' => ['name' => 'Hausmischung', 'category_id' => $categoryId, 'automatic' => false, 'synonyms' => []], 'deleted' => false, 'version' => 1, 'actor' => 'system:cyon'];
+        Http::fake(['cloud.example.test/api/v1/sync' => Http::response(['schema_version' => 1, 'epoch' => $epoch,
+            'accepted' => [], 'categories' => [['id' => $categoryId, 'name' => 'Hausmischungen', 'typical_abv' => null]],
+            'events' => [$event], 'cursor' => 1, 'has_more' => false])]);
+        app(SyncClient::class)->run();
+        self::assertDatabaseHas('ingredient_categories', ['id' => $categoryId]);
+        self::assertDatabaseHas('ingredients', ['id' => $ingredientId, 'category_id' => $categoryId]);
+    }
+
     public function test_failed_pull_does_not_advance_cursor_and_can_resume(): void
     {
         $epoch = (string) Str::uuid();

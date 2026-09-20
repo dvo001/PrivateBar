@@ -12,11 +12,11 @@ return [
     'cocktaildb_key' => env('COCKTAILDB_KEY'),
     'azure_key' => env('AZURE_TRANSLATOR_KEY'),
     'azure_region' => env('AZURE_TRANSLATOR_REGION', 'switzerlandnorth'),
-    'off_user_agent' => 'PrivateBar/1.0.2 (https://privatebar.vonrufs.ch; private household)',
+    'off_user_agent' => 'PrivateBar/1.0.3 (https://privatebar.vonrufs.ch; private household)',
     'photo_mount' => env('PRIVATEBAR_PHOTO_MOUNT', '/mnt/privatebar-photos'),
     'release_public_key' => env('PRIVATEBAR_RELEASE_PUBLIC_KEY'),
     'release_token' => env('PRIVATEBAR_RELEASE_TOKEN'),
     'release_manifest' => env('PRIVATEBAR_RELEASE_MANIFEST'),
-    'version' => '1.0.2',
+    'version' => '1.0.3',
     'schema_version' => 1,
 ];

@@ -139,3 +139,38 @@ Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md)
 - Keine MariaDB-, Browser-/Touch-, Cyon- oder Pi-Abnahme durchgeführt. Die
   Blade-Ausgabe wurde serverseitig geprüft; Layout/CSS bleiben unverändert.
   Keine Live-Daten geändert. Anwendung: [KORREKTUR-MENGEN.md](../KORREKTUR-MENGEN.md).
+
+## Kategorien im Abgleich am 18. September 2026
+
+- Kategorien werden auf Cyon als eigene Stammdatenereignisse akzeptiert und auf
+  dem Pi vor Zutaten angewendet; Kategorieereignisse vom Pi werden abgewiesen.
+- Jede Cyon-Sync-Antwort liefert zusätzlich den vollständigen Kategorienbestand.
+  Damit kann ein alter Zutaten-Event auch dann verarbeitet werden, wenn die
+  Kategorie erst später veröffentlicht wurde.
+- SyncTest und SyncClientTest: 13 Tests, 63 Assertions erfolgreich; PHPStan und
+  Pint erfolgreich. Keine echte Cyon-/Pi-Ausführung durchgeführt.
+
+## Bildabgleich: Regex-Korrektur am 18. September 2026
+
+- Zwei neue Medien-Tests reproduzierten vor der Korrektur denselben
+  `preg_match`-Fehler mit HTTP 500 wie auf Cyon.
+- Nach Korrektur: SyncTest und SyncClientTest unter PHP 8.3.30/SQLite erfolgreich,
+  10 Tests und 55 Assertions. Temporärer APP_KEY nur für den lokalen Testprozess.
+- Upload und Download echter WebP-Bilder für beide erlaubten Verzeichnisse
+  sowie HTTP 422 für ungültige Pfade geprüft.
+- PHPStan Level 5, Pint für die geänderten PHP-Dateien und `git diff --check`
+  erfolgreich. Keine erneute vollständige Suite oder MariaDB-/Zielsystemabnahme.
+
+## Version 1.0.3-Paket am 18. September 2026
+
+- Vollständige Suite: 114 Tests, 883 Assertions erfolgreich; PHPStan Level 5,
+  Pint und `git diff --check` erfolgreich.
+- `artifacts/1.0.3/` enthält Cyon-Update, vollständige Cyon-Installation und
+  Pi-Installation mit SHA-256-Prüfsummen. Archive enthalten keine `.env`,
+  Datenbanken, Tests oder privaten Schlüssel.
+- Die Pakete sind manuell einspielbar, nicht signiert und nicht als reale
+  Cyon-/Pi-Produktionsabnahme freigegeben. `deploy/release-approval.json`
+  bleibt deshalb auf `false`.
+- `deploy/pi/install-release.sh` mit `bash -n` geprüft. Das Pi-Tarball enthält
+  das Skript, `artisan`, Produktions-Vendor und keine Tests, Datenbanken oder
+  `.env`; Archiv und `.sha256`-Datei wurden mit `sha256sum -c` geprüft.
