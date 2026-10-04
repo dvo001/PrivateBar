@@ -223,6 +223,10 @@ von Monitor-Dienst und Kiosk ausführen. Der Browser muss privatebar.local direk
    Der Timer wird während des Wechsels angehalten. `.env` und `storage` bleiben
    gemeinsam erhalten. Cache und Gesundheitsprüfung erfolgen vor dem atomaren
    Umschalten von `current`; ein vorher aktiver Timer wird wieder gestartet.
+   Bei einem bereits installierten 1.1.0-Release mit `File not found` im Browser
+   die Rechte des aktiven Release-Ordners prüfen: Ein per `mktemp` angelegter
+   Ordner mit `0700` sperrt Nginx und PHP-FPM aus. Der Ordner selbst muss
+   durchquerbar sein (`0755`); `.env` bleibt geschützt (`0600`).
    Version 1.1.0 ergänzt gegenüber 1.0.4 keine Migration. Das Skript ist für
    bestehende 1.0.4-Installationen vorgesehen; ältere Stände zuerst gemäss deren
    Updateanleitung migrieren. Nicht erneut `key:generate` oder `migrate --seed` ausführen.

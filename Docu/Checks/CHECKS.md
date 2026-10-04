@@ -247,6 +247,10 @@ Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md)
 
 ## Version 1.1.0 – Paketprüfung am 4. Oktober 2026
 
+- Nach Pi-Rückmeldung `File not found` im Browser: Release-Wechselskript
+  korrigiert die von `mktemp` geerbten Verzeichnisrechte `0700` auf `0755`,
+  damit Nginx und PHP-FPM `public/index.php` erreichen. Shellsyntax geprüft.
+
 - Ressourcenbuild und Versionswechsel auf 1.1.0 erfolgreich. API-/Sync-Schema 1;
   keine neue Migration gegenüber 1.0.4. Freigabefelder bleiben false.
 - Vollständige PHP-Suite: SQLite 134 Tests / 1002 Assertions, zwei

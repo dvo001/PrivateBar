@@ -177,6 +177,9 @@ ln -s "$SHARED/storage" "$TMP_DIR/storage"
 rm -f -- "$TMP_DIR/bootstrap/cache"/*.php
 install -d -o "$SERVICE_USER" -g "$SERVICE_USER" -m 0750 "$TMP_DIR/bootstrap/cache"
 chown -R "$SERVICE_USER:$SERVICE_USER" "$TMP_DIR"
+# Nginx und PHP-FPM müssen den Release bis public/index.php durchqueren
+# können. mktemp erstellt das oberste Verzeichnis mit 0700.
+chmod 0755 "$TMP_DIR"
 
 if systemctl is-active --quiet "$TIMER_UNIT"; then
     TIMER_WAS_ACTIVE=1
