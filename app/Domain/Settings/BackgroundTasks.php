@@ -60,9 +60,24 @@ final class BackgroundTasks
 
     private function cloud(): void
     {
-        if (! config('privatebar.providers_enabled')) {
+        if ($this->settings->serviceEnabled('recipe_import_enabled')) {
+            $this->import();
+        }
+        if (! $this->settings->serviceEnabled('translation_enabled')) {
             return;
         }
+        foreach (DB::table('recipes')->where('translation_pending', true)->where('translation_manual', false)->limit(3)->pluck('id') as $id) {
+            try {
+                app(Translator::class)->one($id);
+            } catch (\Throwable) {
+                $this->settings->set('import_error', 'Übersetzungen ausstehend. Azure-Konfiguration und Verbindung prüfen.');
+                break;
+            }
+        }
+    }
+
+    private function import(): void
+    {
         $hour = (int) $this->settings->get('import_hour', 4, false);
         $interval = (int) $this->settings->get('import_frequency_hours', 24, false);
         $last = $this->settings->get('import_complete');
@@ -92,14 +107,6 @@ final class BackgroundTasks
                 $this->settings->set('import_error', null);
             } catch (\Throwable) {
                 $this->settings->set('import_error', 'Rezeptimport nicht abgeschlossen. Anbieter-Konfiguration und Verbindung prüfen. Der nächste Lauf setzt fort.');
-            }
-        }
-        foreach (DB::table('recipes')->where('translation_pending', true)->where('translation_manual', false)->limit(3)->pluck('id') as $id) {
-            try {
-                app(Translator::class)->one($id);
-            } catch (\Throwable) {
-                $this->settings->set('import_error', 'Übersetzungen ausstehend. Azure-Konfiguration und Verbindung prüfen.');
-                break;
             }
         }
     }

@@ -2,6 +2,7 @@ import datetime
 import importlib.util
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 spec = importlib.util.spec_from_file_location('monitor', Path(__file__).resolve().parents[2] / 'deploy/pi/monitor.py')
@@ -10,6 +11,14 @@ spec.loader.exec_module(monitor)
 
 
 class MonitorTest(unittest.TestCase):
+    def test_monitor_stays_powered_for_clock_without_touch_device(self):
+        with patch.dict(monitor.os.environ, {'PRIVATEBAR_MONITOR_OUTPUT': 'HDMI-A-1'}, clear=True), \
+                patch.object(monitor.subprocess, 'run') as run, \
+                patch.object(monitor.time, 'sleep', side_effect=InterruptedError):
+            with self.assertRaises(InterruptedError):
+                monitor.main()
+            self.assertEqual(['/usr/bin/wlr-randr', '--output', 'HDMI-A-1', '--on'], run.call_args.args[0])
+
     def test_overnight_and_daytime_schedules(self):
         state = {'enabled': True, 'off': '23:00', 'on': '08:00'}
         for hour, expected in [(23, True), (2, True), (7, True), (8, False), (15, False)]:

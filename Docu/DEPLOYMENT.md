@@ -1,5 +1,8 @@
 # Installation und Betrieb
 
+Aktuelle manuelle Version 1.1.0: [Cyon](INSTALLATION-1.1-CYON.md),
+[Pi](INSTALLATION-1.1-PI.md), [Pakete und Änderungen](RELEASE-1.1.md).
+
 ## Freigabestand
 
 Die Codebasis ist zur lokalen Prüfung vorbereitet. Es wurden weder Cyon noch ein
@@ -300,19 +303,27 @@ Private Bilder besitzen keine erlaubte Synchronisationsroute.
 
 `deploy/pi/monitor.py` nach `/usr/local/lib/privatebar/` kopieren und
 `privatebar-monitor.service` als User-Service der grafischen Sitzung installieren.
-Das Dienstkonto benötigt Leserecht auf genau das Touch-Eingabegerät sowie Zugriff
-auf die bestehende Wayland-Sitzung. In `~/.config/privatebar/monitor.env` setzen:
+Das Dienstkonto benötigt Zugriff auf die bestehende Wayland-Sitzung.
+In `~/.config/privatebar/monitor.env` setzen:
 
 ```text
-PRIVATEBAR_TOUCH_DEVICE=/dev/input/by-id/DER_TATSAECHLICHE_TOUCHSCREEN-event-if00
 PRIVATEBAR_MONITOR_OUTPUT=HDMI-A-1
 ```
 
-Eingabegerät und Ausgang zuerst mit der realen Hardware ermitteln. Wayland-Umgebung
-in den User-Service importieren. Das kleine Python-Programm beobachtet das
-Eingabegerät, liest alle 30 Sekunden die Steuerdaten und schaltet mit `wlr-randr`.
-Jede physische Touchinteraktion verlängert die Aktivität um 29 Minuten. Für andere
-Display-Server ist ein entsprechend geprüfter Adapter nötig.
+Den Ausgang mit der realen Hardware ermitteln und die Wayland-Umgebung in den
+User-Service importieren. Der Dienst hält den Ausgang für die Uhr eingeschaltet.
+Nach dem Update `monitor.py` erneut kopieren und den User-Service neu starten;
+ein alter Dienst würde weiterhin den Bildschirm ausschalten.
+Der Kiosk öffnet `https://privatebar.local`; dieser Name muss direkt auf
+127.0.0.1 zeigen (wie im vorhandenen Kiosk-Skript).
+Die OFF-Uhr erscheint nach der Kiosk-Entsperrung nur in diesem lokalen Browser.
+Unter Einstellungen → Lokale Einstellungen lassen sich Zeitplan, analoge/digitale
+Darstellung, Farbe, Leuchtkraft (1–100 %) und Weckdauer (1–120 Minuten) konfigurieren.
+Die Leuchtkraft dimmt die Uhrdarstellung, nicht die Monitor-Hintergrundbeleuchtung.
+Die erste Berührung öffnet die Bar; weitere Interaktionen verlängern die Weckdauer.
+Während dieser Dauer pausiert der Fotorahmen. Einstellungen werden spätestens
+nach 30 Sekunden übernommen. Zeiten gelten in Europe/Zurich mit Sommerzeit.
+Für andere Display-Server ist ein entsprechend geprüfter Adapter nötig.
 
 ## Updates und Release
 
@@ -358,6 +369,11 @@ Rückmigration Daten beschädigen könnte. Unfertige Releaseverzeichnisse vor ei
 neuen Versuch direkt am Pi prüfen und gezielt entfernen.
 
 ## Wartung und Wiederherstellung
+
+PrivateBar bietet auf Cyon einen manuellen SQL-Download unter **Einstellungen →
+Datenbank exportieren**, mit erneuter Passwortprüfung. Die Anleitung für die
+[Neuinstallation aus dem Export](DATENBANK-EXPORT.md) beschreibt den Import in
+eine leere Datenbank über phpMyAdmin und die notwendigen separaten Dateien.
 
 PrivateBar erstellt **keine automatischen Datenbanksicherungen**. Synchronisation
 ist kein Backup. Cyon garantiert durch diese Anwendung keine bestimmten
@@ -406,3 +422,47 @@ neuen Release, prüft `optimize` und `privatebar:health`, schaltet danach
 `current` atomar um und protokolliert jeden Lauf unter `shared/storage/logs/`.
 Die Freigabe für echte Zielsysteme bleibt bis zur getrennten Cyon-/Pi-Abnahme
 gesperrt.
+
+## Update 1.0.4: Produkthinweise bei Rezeptzutaten
+
+Version 1.0.4 ergänzt im Rezeptdetail die konkreten vorhandenen Produkte je
+Zutat, einschliesslich Alternativen und Ersatzprodukten. Die Pakete und die
+manuelle Schrittfolge stehen in [UPDATE-1.0.4.md](UPDATE-1.0.4.md). Es gibt
+keine neue Datenbankmigration. Vor dem Cyon-`optimize` sind alte generierte
+Dateien in `bootstrap/cache/` zu entfernen; das Pi-Release-Skript erledigt
+dies für den temporären Release automatisch. Die echte Zielsystemabnahme bleibt
+offen.
+
+### Externe Dienste und Pi–Cyon-Verbindung im Menü
+
+Unter **Einstellungen → Externe Dienste** werden Rezeptimport und automatische
+Übersetzung auf Cyon getrennt ein-/ausgeschaltet. Die Online-Produktsuche beim
+Barcode wird auf Pi und Cyon jeweils separat eingestellt. Bereits gespeicherte
+Produktdaten bleiben verfügbar; bei deaktivierter Produktsuche werden auch keine
+Produktbilder nachgeladen. Ein pausierter Import behält seinen Cursor und setzt
+nach dem Einschalten beim nächsten Tick fort. Ausstehende Übersetzungen bleiben
+sichtbar, manuelle Übersetzungen werden weiterhin geschützt.
+
+`PRIVATEBAR_PROVIDERS_ENABLED` liefert nur den Startwert, solange der jeweilige
+Menüschalter noch nicht gespeichert wurde. Ein gespeicherter Schalter hat Vorrang;
+der technische Anbieterzugang (TheCocktailDB/Azure) bleibt in der Cyon-Umgebung.
+Die Schalter sind instanzbezogen und werden nicht synchronisiert.
+
+Unter **Einstellungen → Lokale Einstellungen → Pi–Cyon-Verbindung** lassen sich
+HTTPS-Adresse und Gerätezugang nach erneuter PIN-Eingabe speichern. Die bisherigen
+`.env`-Werte bleiben als Startwerte verwendbar; gespeicherte Menüwerte haben Vorrang.
+Der neue Gerätezugang wird mit dem APP_KEY verschlüsselt lokal gespeichert und
+nie wieder angezeigt. Ein leeres Zugangsfeld behält den bestehenden Zugang.
+Bei einer anderen Serveradresse muss der passende Zugang erneut eingetragen werden.
+Während eines laufenden Abgleichs ist eine Änderung der Verbindung gesperrt.
+Speichern fordert den nächsten regulären Abgleich an; bestehende Outbox und Cursor
+bleiben erhalten. Dieselbe Verbindung wird für Rezeptbilder und Wiederherstellung
+von Onlinezugängen verwendet.
+
+**Verbindung testen** prüft die gespeicherte Verbindung über den neuen, nur lesenden
+Endpunkt `/api/v1/device-check` (HTTPS und gültiger, nicht widerrufener Gerätezugang).
+Es werden keine Daten synchronisiert. Cyon muss für diesen Test ebenfalls den
+aktualisierten Code enthalten; ein älteres Cyon ohne diesen Endpunkt wird nicht
+als erfolgreich geprüft gemeldet. Die vorhandenen Sync-Endpunkte bleiben kompatibel.
+Weiterhin zuerst Cyon aktualisieren, danach den Pi. Gerätezugänge werden wie bisher
+auf Cyon mit `privatebar:device` erzeugt. Keine Migration nötig.

@@ -2,13 +2,14 @@
 
 namespace App\Infrastructure\Providers;
 
+use App\Domain\Settings\Settings;
 use Illuminate\Support\Facades\Http;
 
 final class AzureTranslator implements TranslationProvider
 {
     public function translate(string $text, string $language): string
     {
-        if (config('privatebar.mode') !== 'cloud' || ! config('privatebar.providers_enabled') || ! config('privatebar.azure_key')) {
+        if (config('privatebar.mode') !== 'cloud' || ! app(Settings::class)->serviceEnabled('translation_enabled') || ! config('privatebar.azure_key')) {
             throw new \RuntimeException('Übersetzung ist noch nicht eingerichtet.');
         }
         $result = Http::withHeaders(['Ocp-Apim-Subscription-Key' => config('privatebar.azure_key'), 'Ocp-Apim-Subscription-Region' => config('privatebar.azure_region')])

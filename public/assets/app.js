@@ -111,19 +111,59 @@ scannerButton?.addEventListener('click', async () => {
 const frame = document.querySelector('#photo-frame');
 if (frame) {
     const a = document.querySelector('#frame-a'), b = document.querySelector('#frame-b');
+    const clock = document.querySelector('#off-clock');
+    // Ruheanzeige nur am Pi selbst, nicht in Browsern im Heimnetz.
+    const localDisplay = document.body.dataset.localDisplay === '1';
+    let monitor = null, wakeUntil = 0;
+    try { wakeUntil = Number(sessionStorage.getItem('monitor-wake-until')) || 0; } catch { /* Storage optional. */ }
+    const activity = () => {
+        lastActivity = Date.now();
+        if (monitor) {
+            wakeUntil = Date.now() + monitor.minutes * 60000;
+            try { sessionStorage.setItem('monitor-wake-until', String(wakeUntil)); } catch { /* Storage optional. */ }
+        }
+    };
+    const zurich = new Intl.DateTimeFormat('de-CH', { timeZone: 'Europe/Zurich', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+    const resting = () => {
+        if (!monitor?.enabled) return false;
+        const parts = zurich.formatToParts(new Date());
+        const now = parts.find(part => part.type === 'hour').value + ':' + parts.find(part => part.type === 'minute').value;
+        return monitor.off < monitor.on ? now >= monitor.off && now < monitor.on : now >= monitor.off || now < monitor.on;
+    };
+    const updateClock = () => {
+        const parts = zurich.formatToParts(new Date());
+        const hour = Number(parts.find(part => part.type === 'hour').value);
+        const minute = Number(parts.find(part => part.type === 'minute').value);
+        const digital = document.querySelector('#clock-digital');
+        digital.textContent = zurich.format(new Date());
+        digital.hidden = monitor.style === 'analog';
+        document.querySelector('#clock-analog').hidden = monitor.style !== 'analog';
+        document.querySelector('#clock-hour').setAttribute('transform', `rotate(${hour % 12 * 30 + minute / 2} 100 100)`);
+        document.querySelector('#clock-minute').setAttribute('transform', `rotate(${minute * 6} 100 100)`);
+        clock.style.color = monitor.color;
+        clock.style.opacity = String(monitor.brightness / 100);
+        frame.setAttribute('aria-label', `${digital.textContent} Uhr. Zum Öffnen der Bar berühren.`);
+    };
+    const refreshMonitor = async () => {
+        try {
+            const response = await fetch('/monitor/anzeige', { headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, cache: 'no-store' });
+            if (response.ok) monitor = await response.json();
+        } catch { /* Vorhandene lokale Einstellungen bei Verbindungsfehler behalten. */ }
+    };
+    if (localDisplay) { refreshMonitor(); setInterval(refreshMonitor, 30000); }
     let lastActivity = Date.now(), previous = null, current = a, next = b, timer, generation = 0, savedFocus;
     const idle = Math.max(60, Number(document.body.dataset.frameIdle || 300)) * 1000;
     const critical = () => document.querySelector('[data-critical]') || document.querySelector('dialog[open]') || document.hidden;
     const load = async run => {
         try {
-            const response = await fetch('/fotorahmen/naechstes' + (previous ? '?previous=' + encodeURIComponent(previous) : ''), { headers: { Accept: 'application/json' } });
+            const response = await fetch('/fotorahmen/naechstes' + (previous ? '?previous=' + encodeURIComponent(previous) : ''), { headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
             if (!response.ok) throw new Error('photo');
             const photo = await response.json();
-            if (run !== generation || frame.hidden) return;
+            if (run !== generation || frame.hidden || !clock.hidden) return;
             if (!photo.url) { wake(); return; }
             next.src = photo.url;
             await next.decode();
-            if (run !== generation || frame.hidden) return;
+            if (run !== generation || frame.hidden || !clock.hidden) return;
             previous = photo.id;
             const fade = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : Math.min(3, Number(photo.fade));
             // CSSOM setzt nur die Dauer; keine dynamische HTML-Einfügung.
@@ -137,7 +177,9 @@ if (frame) {
         generation += 1; clearTimeout(timer); frame.hidden = true;
         document.querySelector('main').inert = false;
         document.querySelector('.sidebar').inert = false;
-        lastActivity = Date.now(); savedFocus?.focus({ preventScroll: true });
+        clock.hidden = true; a.hidden = false; b.hidden = false;
+        frame.setAttribute('aria-label', 'Fotorahmen. Zum Zurückkehren berühren.');
+        activity(); savedFocus?.focus({ preventScroll: true });
     }
     // Die gesamte erste Berührung einschliesslich des folgenden Klicks abfangen.
     let suppressUntil = 0;
@@ -148,11 +190,26 @@ if (frame) {
                 if (!frame.hidden) { suppressUntil = Date.now() + 700; wake(); }
                 return;
             }
-            lastActivity = Date.now();
+            activity();
         }, { capture: true, passive: false });
     });
-    ['pointermove','wheel','input'].forEach(type => document.addEventListener(type, () => { if (frame.hidden) lastActivity = Date.now(); }, { passive: true }));
+    ['pointermove','wheel','input'].forEach(type => document.addEventListener(type, () => { if (frame.hidden) activity(); }, { passive: true }));
     setInterval(() => {
+        const showClock = resting() && Date.now() >= wakeUntil;
+        if (showClock && !document.hidden) {
+            if (frame.hidden || clock.hidden) {
+                savedFocus = frame.hidden ? document.activeElement : savedFocus;
+                generation += 1; clearTimeout(timer);
+                a.hidden = true; b.hidden = true; clock.hidden = false; frame.hidden = false;
+                frame.focus();
+                document.querySelector('main').inert = true; document.querySelector('.sidebar').inert = true;
+            }
+            updateClock();
+            return;
+        }
+        if (!clock.hidden) wake();
+        // Während der Weckzeit ist auch der Fotorahmen pausiert.
+        if (resting()) return;
         if (frame.hidden && !critical() && Date.now() - lastActivity >= idle) {
             savedFocus = document.activeElement; frame.hidden = false; frame.focus();
             document.querySelector('main').inert = true; document.querySelector('.sidebar').inert = true;

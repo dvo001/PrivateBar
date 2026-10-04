@@ -174,3 +174,98 @@ Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md)
 - `deploy/pi/install-release.sh` mit `bash -n` geprüft. Das Pi-Tarball enthält
   das Skript, `artisan`, Produktions-Vendor und keine Tests, Datenbanken oder
   `.env`; Archiv und `.sha256`-Datei wurden mit `sha256sum -c` geprüft.
+
+## Version 1.0.4 – Produkthinweise am 21. September 2026
+
+- Rezeptdetails zeigen konkrete vorhandene Produkte, mehrere Alternativen und
+  Produkte einer verwendeten Ersatzzutat. Entfernte Flaschen werden nicht
+  angezeigt; Produktnamen werden escaped ausgegeben.
+- Regressionstests für vorhandene/entfernte Produkte, Alternativen, Ersatz und
+  historische Zutaten-Synonyme sind ergänzt.
+- `git diff --check` und `bash -n deploy/pi/install-release.sh` erfolgreich.
+  PHP-Tests, PHPStan, Pint, Browserprüfung und die Cyon-/Pi-Abnahme konnten in
+  dieser Sitzung mangels PHP-Laufzeit beziehungsweise Zielzugriff nicht erneut
+  ausgeführt werden.
+
+## OFF-Uhr am 4. Oktober 2026
+
+- Vier Python-Monitortests erfolgreich, einschliesslich eingeschaltetem Ausgang
+  ohne Touchgeräte-Konfiguration für die Uhranzeige.
+- Frontend-Ressourcen entsprechend tools/build.php aktualisiert;
+  `git diff --check` erfolgreich.
+- PHP-Zugriffstest für lokale Uhrkonfiguration ergänzt, aber nicht ausgeführt.
+  PHP, PHPUnit, PHPStan, Pint und Node/Browserlaufzeit waren nicht verfügbar.
+- Analoge/digitale Darstellung, Zeitplanwechsel, Berührung und Helligkeit müssen
+  noch im Browser und auf dem echten Pi geprüft werden. Keine Bereitstellung.
+
+## Externe Dienste und Verbindung am 4. Oktober 2026
+
+- PHP 8.3.30 / SQLite: vollständige Suite, 129 Tests / 984 Assertions erfolgreich.
+- MariaDB 10.6.23: vollständige Suite, 128 Tests / 982 Assertions erfolgreich;
+  ergänzte Regression zum Uhr-Polling separat mit MonitorTest erfolgreich
+  geprüft (2 Tests / 9 Assertions).
+- Zwölf neue Dienst-/Verbindungstests prüfen getrennte Schalter, Legacy-Startwerte,
+  Importpause/Wiederanlauf, unabhängige Übersetzung, Produktcache ohne HTTP,
+  Verschlüsselung, Nichtanzeige/Nichtweitergabe von Gerätenachweisen, PIN-/Lokalschutz,
+  Sync-Sperre, URL-Validierung, lesenden Verbindungstest, Konfigurationsvorrang,
+  HTTPS, widerrufene Zugänge und Wartungssperre.
+- PHPStan Level 5 erfolgreich (optionale Turbo-Erweiterung im statischen PHP nicht
+  ladbar); projektweite Pint-Prüfung und Ressourcenbuild erfolgreich.
+- JavaScript-Syntax und git diff --check erfolgreich; vier Python-Monitortests bestehen.
+- Chromium/Playwright/axe: 21 reguläre Ansichten bei 1920, 390 und 320 Pixeln ohne
+  Überlauf, JavaScriptfehler oder erkannte WCAG-Verstösse. Neuer Bedienablauf
+  tests/Browser/settings.cjs prüft Schalter speichern/neuladen, lokales
+  PIN-Entsperren, leeres Passwortfeld, Uhr-Auswahl und axe bei denselben Breiten.
+- Browser-Test entdeckt zunächst falsche Rücksprungadresse durch Uhr-Polling;
+  Korrektur mit AJAX-Header und explizitem Rücksprung, erneuter Bedienablauf erfolgreich.
+- Laufzeiten von PHP/Node und Bibliotheken nur temporär unter /tmp bereitgestellt,
+  Datenbanken isoliert. Keine echte Cyon-/Pi-Verbindung, kein Live-Anbieterzugriff,
+  keine Änderung der Produktionsfreigabe und keine Bereitstellung.
+
+## Manueller Datenbankexport am 4. Oktober 2026
+
+- Vollständige Suite mit PHP 8.3.30: SQLite 134 Tests / 1002 Assertions, zwei
+  MariaDB-spezifische Tests übersprungen; MariaDB 10.6.23 134 Tests / 1034 Assertions.
+- SQL-Roundtrip in einer neu angelegten, isolierten MariaDB mit Konten, Katalog,
+  Sync-Ereignissen, 105 zusätzlichen Zeilen, Dezimalwerten, NULL, Anführungszeichen,
+  Backslashes, NUL, Emoji, Binärwerten und generierter Spalte erfolgreich.
+- Snapshot schliesst parallele spätere Datenänderung aus. Fremdschlüssel verhindern
+  ungültige neue Verweise; Sitzungen/Cache bleiben leer, Remember-me-Token ist entfernt,
+  importierte Wartung ist aktiv und die Exportquelle bleibt regulär zugänglich.
+- HTTP-Zugriff nur für bestätigte Cyon-Mitglieder mit erneutem Passwort; Passwort
+  wird bei Fehlern nicht geflasht. Download vollständig, temporäre Datei danach gelöscht.
+- Simulierter Lesefehler rollt die Transaktion zurück und entfernt die Teil-Datei.
+- Abschliessender Exportprüflauf nach Hexkodierung der Binärdaten und zusätzlicher
+  UTF-8-Prüfung: 5 Tests / 51 Assertions erfolgreich; SQL-Datei bleibt für den
+  phpMyAdmin-Import gültiges UTF-8.
+- PHPStan Level 5, Pint und git diff --check erfolgreich. Optionale PHPStan-Turbo-
+  Erweiterung im statischen PHP weiterhin nicht ladbar, Analyse selbst erfolgreich.
+- tests/Browser/export.cjs: Cloud-Einstellungen bei 1920, 390 und 320 Pixeln,
+  erneute Passwortprüfung, leeres Passwortfeld nach Fehler, kein Überlauf,
+  keine JavaScriptfehler oder erkannte axe/WCAG-Verstösse.
+- Keine neue Migration und keine reale Cyon-/Pi-Ausführung; keine Bereitstellung.
+
+## Version 1.1.0 – Paketprüfung am 4. Oktober 2026
+
+- Ressourcenbuild und Versionswechsel auf 1.1.0 erfolgreich. API-/Sync-Schema 1;
+  keine neue Migration gegenüber 1.0.4. Freigabefelder bleiben false.
+- Vollständige PHP-Suite: SQLite 134 Tests / 1002 Assertions, zwei
+  MariaDB-spezifische Tests übersprungen; MariaDB 134 Tests / 1035 Assertions.
+- PHPStan Level 5 ohne Analysefehler, Pint, Shellsyntax und git diff --check
+  erfolgreich. Optionale PHPStan-Turbo-Erweiterung im statischen PHP nicht ladbar.
+- Elf Python-Tests für Monitor und Pi-Voraussetzungsskript erfolgreich.
+- Produktionsbibliotheken separat aus composer.lock mit --no-dev installiert:
+  76 Pakete, Plattformanforderungen mit PHP 8.3.30 erfüllt. Kein Austausch
+  des Entwicklungs-Vendor im Arbeitsverzeichnis.
+- Isolierte Produktionskopie: Migrationen/Seed, Konfigurations-/Routen-/View-Caches,
+  Versionsprüfung und privatebar:health für pi und cloud erfolgreich.
+- Browserprüfung mit Produktionsbibliotheken und isolierter HTTP-Testkonfiguration:
+  21 reguläre Ansichten sowie Einstellungs- und Exportablauf bei 1920, 390 und
+  320 Pixeln; kein Überlauf, keine JavaScriptfehler oder erkannten axe-Verstösse.
+  Der Produktionsmodus verlangt weiterhin HTTPS.
+- ZIP-/Tar-Inhalt und SHA-256-Prüfsummen geprüft. Keine echte .env, Datenbank,
+  privaten Bilder, Laufzeitcaches oder Entwicklungsbibliotheken verpackt;
+  Cyon-Update ohne storage und Erstinstallationsskript.
+- Anwendungsstart, Produktionscache und Gesundheitsprüfung auch nach Entpacken
+  der beiden Installationsarchive geprüft.
+- Keine Live-Abnahme, Installation auf Zielsystemen, Signatur oder Git-Tag.

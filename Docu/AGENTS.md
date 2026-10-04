@@ -380,9 +380,11 @@ Zeige bei leerem Bestand den exakten Hinweis **„Bar bitte füllen“** sowie d
 ## Monitor-Ruhezeit
 
 - Ein-/Ausschaltplan ist lokal konfigurierbar und standardmässig deaktiviert.
-- Während der Ruhezeit darf eine Berührung den Monitor aufwecken.
-- Danach bleibt der Monitor 29 Minuten aktiv.
-- Jede weitere Interaktion startet die 29 Minuten erneut.
+- Während der Ruhezeit (OFF-Modus) bleibt der Monitor eingeschaltet und zeigt wahlweise eine analoge oder digitale Uhr auf schwarzem Hintergrund.
+- Uhrdarstellung, Farbe und Leuchtkraft der Uhr sind lokal konfigurierbar; Leuchtkraft betrifft die Darstellung, nicht die Hardware-Hintergrundbeleuchtung.
+- Eine Berührung öffnet die Anwendung für eine lokal konfigurierbare Dauer von 1 bis 120 Minuten (Standard 29 Minuten).
+- Jede weitere Interaktion startet diese Dauer erneut. Während der Ruhezeit und der Weckdauer pausiert der Fotorahmen.
+- Der Zeitplan verwendet Europe/Zurich und muss unterschiedliche Start-/Endzeiten haben.
 - Implementiere notwendige lokale Betriebssystemintegration als kleinen, dokumentierten Dienst; die Webanwendung bleibt die steuernde Oberfläche.
 
 ## Logo und Poster für Version 1
@@ -413,7 +415,7 @@ Stil: verspielt-illustrativ, mediterran, französische Riviera der 1950er/60er J
 ## Backupentscheidung
 
 - PrivateBar erstellt in Version 1 keine eigenen automatischen Datenbanksicherungen.
-- Die Wiederherstellungsquelle ist das vom Benutzer vorausgesetzte Cyon-Hosting-Backup.
+- Zusätzlich zum Cyon-Hosting-Backup bietet Cyon einen manuellen SQL-Datenbankexport im Einstellungsmenü, nach erneuter Passwortprüfung. Er lässt sich bei einer Neuinstallation in eine leere MariaDB einspielen. Bilder und Umgebungskonfiguration werden separat gesichert.
 - Dokumentiere, dass Synchronisation kein Backup ersetzt und Cyon keine bestimmten Sicherungspunkte garantiert.
 - Eine Wiederherstellung muss im Wartungsmodus durchgeführt und danach kontrolliert zum Pi synchronisiert werden.
 
@@ -481,3 +483,15 @@ Prüfe zusätzlich:
 - Produktionsbetrieb auf ARM und Cyon Shared Hosting.
 
 Eine Funktion ist erst fertig, wenn sie fachlich korrekt, getestet, touchbedienbar, fehlertolerant, dokumentiert und in beiden betroffenen Umgebungen geprüft ist.
+
+## Ergänzung: bedienbare Dienste und Verbindung
+
+- Externe Dienste werden im Einstellungsmenü separat geschaltet: Rezeptimport und
+  automatische Übersetzung auf Cyon, Online-Produktsuche je Instanz.
+- Der bisherige Anbieter-Feature-Schalter ist nur der Startwert für noch nicht
+  gespeicherte Menüschalter. Anbieterzugänge bleiben technische Konfiguration.
+- Lokale Verbindungseinstellungen bieten HTTPS-Adresse, Gerätezugang einrichten/
+  ersetzen und einen lesenden Verbindungstest, jeweils direkt am Pi mit erneuter PIN.
+- Gerätezugang lokal verschlüsselt speichern, nie anzeigen oder synchronisieren;
+  leeres Zugangsfeld erhält den bestehenden Zugang. Bei Serverwechsel neuen Zugang
+  verlangen und Änderungen während eines laufenden Abgleichs sperren.

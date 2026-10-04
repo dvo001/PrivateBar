@@ -15,6 +15,11 @@ final class Settings
         return $value === null ? $default : json_decode($value, true, 512, JSON_THROW_ON_ERROR);
     }
 
+    public function serviceEnabled(string $key): bool
+    {
+        return (bool) $this->get($key, (bool) config('privatebar.providers_enabled', false));
+    }
+
     public function set(string $key, mixed $value, bool $local = true): void
     {
         DB::table($local ? 'local_settings' : 'shared_settings')->updateOrInsert(['key' => $key], [

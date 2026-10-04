@@ -2,13 +2,14 @@
 
 namespace App\Infrastructure\Providers;
 
+use App\Domain\Settings\Settings;
 use Illuminate\Support\Facades\Http;
 
 final class TheCocktailDb implements RecipeProvider
 {
     public function batch(string $cursor): array
     {
-        if (config('privatebar.mode') !== 'cloud' || ! config('privatebar.providers_enabled') || ! config('privatebar.cocktaildb_key')) {
+        if (config('privatebar.mode') !== 'cloud' || ! app(Settings::class)->serviceEnabled('recipe_import_enabled') || ! config('privatebar.cocktaildb_key')) {
             throw new \RuntimeException('TheCocktailDB ist noch nicht eingerichtet.');
         }
         $alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';

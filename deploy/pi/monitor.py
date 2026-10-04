@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-"""Small OS integration: Wayland DPMS plus physical touchscreen wake, no web worker."""
-import datetime
-import json
+"""Keep Wayland output powered for the browser OFF clock."""
 import os
-import select
 import subprocess
 import time
-from zoneinfo import ZoneInfo
 
 
 def resting(state, now):
@@ -18,29 +14,15 @@ def resting(state, now):
 
 
 def main():
-    device = os.environ['PRIVATEBAR_TOUCH_DEVICE']
+    # Die Ruheanzeige läuft im Kioskbrowser. Auch bei alten DPMS-Zuständen
+    # muss der Monitor eingeschaltet bleiben, damit die Uhr sichtbar ist.
     output = os.environ.get('PRIVATEBAR_MONITOR_OUTPUT', 'HDMI-A-1')
-    fd = os.open(device, os.O_RDONLY | os.O_NONBLOCK)
-    last_touch = float('-inf')
-    refresh, active, state = 0.0, None, {'enabled': False}
     while True:
-        now = time.monotonic()
-        if now >= refresh:
-            try:
-                result = subprocess.run(['/usr/bin/php8.3', '/srv/privatebar/current/artisan', 'privatebar:monitor-state'], capture_output=True, text=True, timeout=10, check=True)
-                state = json.loads(result.stdout)
-            except (subprocess.SubprocessError, ValueError):
-                state = {'enabled': False}  # Background failure leaves the screen usable.
-            refresh = now + 30
-        readable, _, _ = select.select([fd], [], [], 0.25)
-        if readable:
-            os.read(fd, 4096)
-            last_touch = time.monotonic()
-        desired = not resting(state, datetime.datetime.now(ZoneInfo('Europe/Zurich'))) or time.monotonic() - last_touch < 29 * 60
-        if desired != active:
-            result = subprocess.run(['/usr/bin/wlr-randr', '--output', output, '--on' if desired else '--off'], capture_output=True, timeout=5)
-            if result.returncode == 0:
-                active = desired
+        try:
+            subprocess.run(['/usr/bin/wlr-randr', '--output', output, '--on'], capture_output=True, timeout=5)
+        except (OSError, subprocess.SubprocessError):
+            pass  # Beim nächsten Lauf erneut versuchen.
+        time.sleep(30)
 
 
 if __name__ == '__main__':

@@ -57,6 +57,33 @@ final class BarTest extends TestCase
         self::assertContains($this->id('Wasser'), app(Catalog::class)->context()['available']);
     }
 
+    public function test_recipe_lists_only_present_products_and_replacement_products(): void
+    {
+        $inventory = app(Inventory::class);
+        $gin = $this->id('Gin');
+        $inventory->save(['name' => 'London Dry', 'brand' => 'Hausmarke', 'ingredient_id' => $gin]);
+        $inventory->save(['name' => 'Alternative <Gin>', 'ingredient_id' => $gin]);
+        $removed = $inventory->save(['name' => 'Entfernte Flasche', 'ingredient_id' => $gin]);
+        $inventory->remove($removed);
+        $recipe = $this->id('recipe:Gin Tonic');
+        $this->unlocked()->get('/rezepte/'.$recipe)->assertOk()
+            ->assertSee('Aus deiner Bar:')->assertSee('Hausmarke London Dry')
+            ->assertSee('Alternative <Gin>')->assertDontSee('Alternative <Gin>', false)
+            ->assertDontSee('Entfernte Flasche');
+
+        DB::table('bar_inventory')->delete();
+        DB::table('ingredient_substitutions')->delete();
+        DB::table('ingredient_substitutions')->insert(['id' => (string) Str::uuid(),
+            'required_id' => $gin, 'replacement_id' => $this->id('Wodka'), 'enabled' => true]);
+        $inventory->save(['name' => 'Mein Ersatzwodka', 'ingredient_id' => $this->id('Wodka')]);
+        $this->unlocked()->get('/rezepte/'.$recipe)->assertOk()
+            ->assertSee('ersetzt durch Wodka')->assertSee('Mein Ersatzwodka')
+            ->assertDontSee('Hausmarke London Dry');
+
+        DB::table('bar_inventory')->delete();
+        $this->unlocked()->get('/rezepte/'.$recipe)->assertOk()->assertDontSee('Aus deiner Bar:');
+    }
+
     public function test_barcode_confirmation_corrections_and_rescan_removal(): void
     {
         $data = ['name' => 'Mein Gin', 'brand' => 'Hausmarke', 'barcode' => '7612345678901', 'ingredient_id' => $this->id('Gin'), 'abv' => 42.5, 'confirmed' => 1];

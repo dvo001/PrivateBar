@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\BarController;
+use App\Http\Controllers\DatabaseExportController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\RecipeController;
@@ -52,6 +53,8 @@ Route::middleware('bar')->group(function () {
     Route::post('/einstellungen/zutaten', [SettingsController::class, 'createIngredient']);
     Route::post('/einstellungen/zutaten/{id}', [SettingsController::class, 'ingredient'])->whereUuid('id');
     Route::get('/einstellungen', [SettingsController::class, 'index'])->name('settings');
+    Route::post('/einstellungen/datenbank/export', [DatabaseExportController::class, 'download'])->middleware('throttle:5,15');
+    Route::post('/einstellungen/dienste', [SettingsController::class, 'services']);
     Route::post('/einstellungen/gemeinsam', [SettingsController::class, 'shared']);
     Route::post('/einstellungen/ersatz', [SettingsController::class, 'substitution']);
     Route::post('/einstellungen/synchronisieren', [SettingsController::class, 'sync']);
@@ -61,6 +64,9 @@ Route::middleware('bar')->group(function () {
     Route::post('/einstellungen/mitglieder/{id}/entfernen', [MemberController::class, 'remove']);
     Route::post('/einstellungen/mitglieder/{id}/sitzungen', [MemberController::class, 'sessions']);
     Route::middleware('local')->group(function () {
+        Route::post('/einstellungen/verbindung', [SettingsController::class, 'connection']);
+        Route::post('/einstellungen/verbindung/test', [SettingsController::class, 'testConnection']);
+        Route::get('/monitor/anzeige', [SettingsController::class, 'monitor']);
         Route::post('/einstellungen/wiederherstellung', [SettingsController::class, 'recovery']);
         Route::get('/einstellungen/lokal', [SettingsController::class, 'localForm']);
         Route::post('/einstellungen/lokal/oeffnen', [SettingsController::class, 'local']);

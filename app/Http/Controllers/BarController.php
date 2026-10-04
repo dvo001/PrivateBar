@@ -6,6 +6,7 @@ use App\Domain\Bar\Inventory;
 use App\Domain\Bar\ShoppingList;
 use App\Domain\Photos\ImageProcessor;
 use App\Domain\Recipes\IngredientCatalog;
+use App\Domain\Settings\Settings;
 use App\Infrastructure\Providers\ProductProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,7 @@ final class BarController
                 $product = ['barcode' => $barcode];
                 $message = 'Die Produktsuche ist gerade nicht erreichbar. Du kannst die Flasche manuell erfassen.';
             }
-            if (! empty($product['image_url']) && parse_url($product['image_url'], PHP_URL_HOST) === 'images.openfoodfacts.org') {
+            if (app(Settings::class)->serviceEnabled('product_lookup_enabled') && ! empty($product['image_url']) && parse_url($product['image_url'], PHP_URL_HOST) === 'images.openfoodfacts.org') {
                 $tmp = tempnam(sys_get_temp_dir(), 'privatebar-off-');
                 try {
                     Http::connectTimeout(2)->timeout(5)->withOptions(['sink' => $tmp, 'allow_redirects' => false])->get($product['image_url'])->throw();

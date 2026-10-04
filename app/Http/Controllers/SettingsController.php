@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Access\AccessGuard;
 use App\Domain\Recipes\IngredientGlossary;
+use App\Domain\Settings\CloudConnection;
 use App\Domain\Settings\Settings;
 use App\Domain\Sync\Journal;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -11,6 +12,7 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -59,6 +61,48 @@ final class SettingsController
         return back()->with('message', 'Gerichtete Ersatzregel gespeichert.');
     }
 
+    public function services(Request $request, Settings $settings)
+    {
+        $keys = config('privatebar.mode') === 'cloud'
+            ? ['recipe_import_enabled', 'translation_enabled', 'product_lookup_enabled']
+            : ['product_lookup_enabled'];
+        $data = $request->validate(array_fill_keys($keys, 'required|boolean'));
+        DB::transaction(function () use ($keys, $data, $settings) {
+            foreach ($keys as $key) {
+                $settings->set($key, (bool) $data[$key]);
+            }
+        });
+
+        return redirect('/einstellungen')->with('message', 'Externe Dienste gespeichert.');
+    }
+
+    public function connection(Request $request, AccessGuard $guard, CloudConnection $connection)
+    {
+        $this->pin($request, $guard);
+        $data = $request->validate(['cloud_url' => 'required|string|max:255', 'device_token' => ['nullable', 'string', 'min:16', 'max:512', 'regex:/^[a-zA-Z0-9._~-]+$/D']]);
+        $lock = Cache::lock('privatebar-sync', 180);
+        if (! $lock->get()) {
+            throw ValidationException::withMessages(['connection' => 'Ein Abgleich läuft. Bitte danach erneut speichern.']);
+        }
+        try {
+            DB::transaction(fn () => $connection->save($data['cloud_url'], $data['device_token'] ?? null));
+        } finally {
+            $lock->release();
+        }
+
+        return redirect('/einstellungen')->with('message', 'Pi–Cyon-Verbindung gespeichert. Der nächste Minutenlauf startet den Abgleich.');
+    }
+
+    public function testConnection(Request $request, AccessGuard $guard, CloudConnection $connection, Settings $settings)
+    {
+        $this->pin($request, $guard);
+        $settings->set('cloud_connection_result', $connection->test()
+            ? 'Verbindung und Gerätezugang erfolgreich geprüft.'
+            : 'Verbindung nicht bestätigt. HTTPS-Adresse, Gerätezugang und Cyon-Version prüfen.');
+
+        return redirect('/einstellungen');
+    }
+
     public function localForm()
     {
         return view('settings.local-unlock');
@@ -68,7 +112,7 @@ final class SettingsController
     {
         $this->pin($request, $guard);
 
-        return view('settings.local', ['settings' => $settings]);
+        return view('settings.local', ['settings' => $settings, 'connection' => app(CloudConnection::class)]);
     }
 
     private function pin(Request $request, AccessGuard $guard): void
@@ -78,10 +122,23 @@ final class SettingsController
         }
     }
 
+    public function monitor(Settings $settings)
+    {
+        return response()->json([
+            'enabled' => (bool) $settings->get('monitor_enabled', false),
+            'off' => $settings->get('monitor_off', '23:00'),
+            'on' => $settings->get('monitor_on', '08:00'),
+            'minutes' => (int) $settings->get('monitor_wake_minutes', 29),
+            'style' => $settings->get('monitor_clock_style', 'digital'),
+            'color' => $settings->get('monitor_clock_color', '#efd37c'),
+            'brightness' => (int) $settings->get('monitor_clock_brightness', 30),
+        ])->header('Cache-Control', 'no-store');
+    }
+
     public function saveLocal(Request $request, AccessGuard $guard, Settings $settings)
     {
         $this->pin($request, $guard);
-        $data = $request->validate(['frame_idle_minutes' => 'required|integer|between:1,120', 'frame_seconds' => 'required|integer|between:3,300', 'frame_fade' => 'required|numeric|between:0,3', 'photo_cache_mb' => 'required|integer|between:1,8192', 'monitor_enabled' => 'required|boolean', 'monitor_off' => 'required|date_format:H:i', 'monitor_on' => 'required|date_format:H:i', 'smb_server' => 'nullable|regex:/^[a-zA-Z0-9.-]+$/D|max:253', 'smb_share' => 'nullable|regex:/^[\pL\pN _.-]+$/u|max:100', 'smb_subpath' => 'nullable|string|max:255', 'smb_user' => 'nullable|string|max:100', 'smb_password' => 'nullable|string|max:255', 'new_pin' => 'nullable|regex:/^[0-9]{6}$/D']);
+        $data = $request->validate(['frame_idle_minutes' => 'required|integer|between:1,120', 'frame_seconds' => 'required|integer|between:3,300', 'frame_fade' => 'required|numeric|between:0,3', 'photo_cache_mb' => 'required|integer|between:1,8192', 'monitor_enabled' => 'required|boolean', 'monitor_off' => 'required|date_format:H:i', 'monitor_on' => 'required|date_format:H:i|different:monitor_off', 'monitor_wake_minutes' => 'required|integer|between:1,120', 'monitor_clock_style' => 'required|in:analog,digital', 'monitor_clock_color' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/D'], 'monitor_clock_brightness' => 'required|integer|between:1,100', 'smb_server' => 'nullable|regex:/^[a-zA-Z0-9.-]+$/D|max:253', 'smb_share' => 'nullable|regex:/^[\pL\pN _.-]+$/u|max:100', 'smb_subpath' => 'nullable|string|max:255', 'smb_user' => 'nullable|string|max:100', 'smb_password' => 'nullable|string|max:255', 'new_pin' => 'nullable|regex:/^[0-9]{6}$/D']);
         if (str_contains($data['smb_subpath'] ?? '', '..') || str_contains($data['smb_subpath'] ?? '', ',') || preg_match('/[\r\n]/', ($data['smb_user'] ?? '').($data['smb_password'] ?? '').($data['smb_subpath'] ?? ''))) {
             throw ValidationException::withMessages(['smb_subpath' => 'Pfad und Zugangsdaten enthalten ungültige Zeichen.']);
         }
@@ -136,12 +193,12 @@ final class SettingsController
     {
         $this->pin($request, $guard);
         $data = $request->validate(['email' => 'required|email|max:255']);
-        $url = rtrim(config('privatebar.cloud_url'), '/');
-        if (! str_starts_with($url, 'https://') || ! config('privatebar.device_token')) {
+        $url = app(CloudConnection::class)->url();
+        if (! CloudConnection::validUrl($url) || ! app(CloudConnection::class)->token()) {
             throw ValidationException::withMessages(['recovery' => 'Der Gerätezugang zu Cyon ist noch nicht eingerichtet.']);
         }
         try {
-            $link = Http::withToken(config('privatebar.device_token'))->connectTimeout(3)->timeout(10)->post($url.'/api/v1/recovery', $data)->throw()->json();
+            $link = Http::withToken(app(CloudConnection::class)->token())->withoutRedirecting()->connectTimeout(3)->timeout(10)->post($url.'/api/v1/recovery', $data)->throw()->json();
         } catch (\Throwable) {
             throw ValidationException::withMessages(['recovery' => 'Reset nicht möglich. Verbindung prüfen; falls noch ein Mitglied angemeldet ist, erstellt dieses den Link.']);
         }

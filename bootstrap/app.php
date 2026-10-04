@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['bar' => BarAccess::class, 'local' => LocalOnly::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->dontFlash(['pin', 'new_pin', 'smb_password', 'password', 'password_confirmation']);
+        $exceptions->dontFlash(['pin', 'new_pin', 'smb_password', 'device_token', 'password', 'password_confirmation']);
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Sync;
 
+use App\Domain\Settings\CloudConnection;
 use App\Domain\Settings\Settings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -18,15 +19,16 @@ final class SyncClient
         if (config('privatebar.mode') !== 'pi') {
             throw new \RuntimeException('Nur der Raspberry Pi startet den Abgleich.');
         }
-        $url = rtrim(config('privatebar.cloud_url'), '/');
-        if (! str_starts_with($url, 'https://') || ! config('privatebar.device_token')) {
-            throw new \RuntimeException('HTTPS-Serveradresse und Gerätezugang müssen eingerichtet sein.');
-        }
         $lock = Cache::lock('privatebar-sync', 180);
         if (! $lock->get()) {
             return;
         }
         try {
+            $url = app(CloudConnection::class)->url();
+            $token = app(CloudConnection::class)->token();
+            if (! CloudConnection::validUrl($url) || ! $token) {
+                throw new \RuntimeException('HTTPS-Serveradresse und Gerätezugang müssen eingerichtet sein.');
+            }
             $this->settings->set('sync_state', 'Synchronisation läuft');
             $deadline = microtime(true) + 120;
             // Maximal fünf Netzwerkrunden; nächster Cronlauf setzt den Cursor fort.
@@ -43,9 +45,9 @@ final class SyncClient
 
                         return;
                     }
-                    $this->uploadMedia($url, $event['payload']['image_path'] ?? null);
+                    $this->uploadMedia($url, $event['payload']['image_path'] ?? null, $token);
                 }
-                $result = Http::withToken(config('privatebar.device_token'))->connectTimeout(3)->timeout(20)->post($url.'/api/v1/sync', ['schema_version' => 1, 'epoch' => $cursor?->epoch, 'cursor' => $cursor->cursor ?? 0, 'events' => $events])->throw()->json();
+                $result = Http::withToken($token)->withoutRedirecting()->connectTimeout(3)->timeout(20)->post($url.'/api/v1/sync', ['schema_version' => 1, 'epoch' => $cursor?->epoch, 'cursor' => $cursor->cursor ?? 0, 'events' => $events])->throw()->json();
                 if (($result['schema_version'] ?? null) !== 1) {
                     throw new \RuntimeException('Nicht unterstützte Serverversion.');
                 }
@@ -56,7 +58,7 @@ final class SyncClient
 
                         return;
                     }
-                    $this->downloadMedia($url, $event['payload']['image_path'] ?? null);
+                    $this->downloadMedia($url, $event['payload']['image_path'] ?? null, $token);
                 }
                 $hasPending = DB::transaction(function () use ($result, $events) {
                     $this->settings->assertRunning();
@@ -107,21 +109,21 @@ final class SyncClient
         }
     }
 
-    private function uploadMedia(string $url, ?string $path): void
+    private function uploadMedia(string $url, ?string $path, string $token): void
     {
         if (! $path || ! preg_match('~^(recipes|products)/[a-f0-9]{64}\.webp$~D', $path) || ! Storage::disk('local')->exists($path)) {
             return;
         }
         $epoch = DB::table('sync_cursors')->where('peer', 'cloud')->value('epoch');
-        $key = 'media-upload:'.hash('sha256', $url.':'.config('privatebar.device_token').':'.$epoch.':'.$path);
+        $key = 'media-upload:'.hash('sha256', $url.':'.$token.':'.$epoch.':'.$path);
         if (DB::table('provider_cache')->where('key', $key)->where('expires_at', '>', now())->exists()) {
             return;
         }
-        Http::withToken(config('privatebar.device_token'))->connectTimeout(3)->timeout(15)->post($url.'/api/v1/media', ['path' => $path, 'content' => base64_encode(Storage::disk('local')->get($path))])->throw();
+        Http::withToken($token)->withoutRedirecting()->connectTimeout(3)->timeout(15)->post($url.'/api/v1/media', ['path' => $path, 'content' => base64_encode(Storage::disk('local')->get($path))])->throw();
         DB::table('provider_cache')->updateOrInsert(['key' => $key], ['payload' => 'true', 'expires_at' => now()->addDays(30)]);
     }
 
-    private function downloadMedia(string $url, ?string $path): void
+    private function downloadMedia(string $url, ?string $path, string $token): void
     {
         if (! $path) {
             return;
@@ -132,7 +134,7 @@ final class SyncClient
         if (Storage::disk('local')->exists($path)) {
             return;
         }
-        $data = Http::withToken(config('privatebar.device_token'))->connectTimeout(3)->timeout(15)->get($url.'/api/v1/media', ['path' => $path])->throw()->body();
+        $data = Http::withToken($token)->withoutRedirecting()->connectTimeout(3)->timeout(15)->get($url.'/api/v1/media', ['path' => $path])->throw()->body();
         if (strlen($data) > 3 * 1024 * 1024 || ! hash_equals($m[2], hash('sha256', $data))) {
             throw new \RuntimeException('Medienprüfsumme stimmt nicht.');
         }

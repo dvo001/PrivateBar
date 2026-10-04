@@ -21,6 +21,13 @@ final class SyncController
         return $device;
     }
 
+    public function check(Request $request)
+    {
+        $this->device($request);
+
+        return response()->json(['authenticated' => true, 'schema_version' => 1])->header('Cache-Control', 'no-store');
+    }
+
     public function exchange(Request $request, SyncServer $server)
     {
         $device = $this->device($request);

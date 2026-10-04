@@ -1,6 +1,33 @@
 # Umsetzungsstand
 
-Stand: 18. September 2026, Version 1.0.3. Die Anwendung ist implementiert und lokal geprüft.
+## Version 1.1.0: 4. Oktober 2026
+
+Manuelle Cyon-Installations-/Updatepakete und Pi-Installations-/Updatepaket
+unter `artifacts/1.1.0/`, inklusive Produktionsbibliotheken, Frontend und
+Prüfsummen. Separate Anleitungen: INSTALLATION-1.1-CYON.md und
+INSTALLATION-1.1-PI.md. Änderungen und Herkunft: RELEASE-1.1.md.
+Keine zusätzliche Datenbankmigration gegenüber 1.0.4; API-/Sync-Schema bleibt 1.
+Pi-Update erfordert auch den Austausch und Neustart des Monitor-User-Service.
+Die tatsächliche Cyon-/Pi-Abnahme steht aus; keine Produktionsfreigabe oder
+Bereitstellung und keine Signatur für die Updatefunktion im Menü.
+
+## Produkthinweise bei Drink-Zutaten: 21. September 2026
+
+Im Rezeptdetail steht unter jeder zugeordneten Zutat «Aus deiner Bar» mit Marke
+und Produktname der vorhandenen Produkte. Mehrere passende Produkte erscheinen
+als Alternativen mit «oder». Bei Ersatz wird der Bestand der verwendeten
+Ersatzzutat angezeigt; historische Zutaten-Synonyme werden berücksichtigt.
+Generische Bestandseinträge sind ausdrücklich gekennzeichnet. Für automatische
+Grundzutaten ohne Produkt und fehlende Zutaten erscheint kein Produkthinweis.
+Die bestehende Alkoholschätzung und Machbarkeitslogik bleiben unverändert.
+
+Regressionstests für vorhandene/entfernte Produkte, mehrere Alternativen,
+HTML-Escaping, Ersatz und historische Zuordnungen sind ergänzt.
+`git diff --check` ist erfolgreich. PHP-Tests, PHPStan und Pint konnten in dieser
+Sitzung mangels auffindbarer PHP-Laufzeit nicht ausgeführt werden.
+Browserprüfung und Abnahme auf Cyon/Pi stehen aus; keine Bereitstellung erfolgt.
+
+Stand: 4. Oktober 2026, Version 1.1.0. Die Anwendung ist implementiert und lokal geprüft.
 Eine Produktionsfreigabe gemäss AGENTS.md ist damit noch nicht erteilt.
 
 ## Implementiert
@@ -30,7 +57,7 @@ Die konkreten Prüfergebnisse stehen in [Checks/CHECKS.md](Checks/CHECKS.md).
 
 1. Pi und Cyon tatsächlich einrichten: Datenbanken, HTTPS, PIN/Konten, Gerätezugang, Cron/systemd und Anbieterzugänge.
 2. Beide echten Instanzen zusammen abnehmen: Offline-Schreiben, Verbindungsabbruch, konkurrierende Änderungen, Wiederanlauf und Wiederherstellung.
-3. Pi-Touchdisplay und Kamera, SMB-Freigabe, Netzverlust, Fotocache sowie Monitor-Aus-/Einschaltung und 29-Minuten-Weckzeit prüfen. Fotorahmen-Dauertest durchführen.
+3. Pi-Touchdisplay und Kamera, SMB-Freigabe, Netzverlust, Fotocache sowie OFF-Uhr und konfigurierbare Weckdauer prüfen. Fotorahmen-Dauertest durchführen.
 4. Antwortzeiten und Speicherbedarf mit vollem importiertem Katalog auf dem Ziel-Pi messen. Lokale Desktopmessungen belegen keine Pi-Leistungsgrenze.
 5. Live-Anbieterzugriffe, Übersetzungsqualität und Quellmetadaten prüfen. Unbekannte Mengen/Metadaten werden nicht erfunden; dadurch bleiben einzelne Alkoholschätzungen offen.
 6. Signiertes Release mit echtem Schlüssel, privaten Artefakten und Produktionsverzeichnisrechten testen. Wiederherstellungsbefehle im Betrieb proben; es gibt keine automatische Sicherung.
@@ -181,3 +208,75 @@ Laravel die Verzeichnisalternative `recipes|products` nicht als Regeltrenner
 behandelt. Der zuvor reproduzierte HTTP-500-Fehler wird damit behoben.
 Anleitung: [KORREKTUR-BILDSYNC.md](KORREKTUR-BILDSYNC.md).
 Cyon-/Pi-Ausführung und tatsächlicher Bildabgleich bleiben ausstehend.
+
+## OFF-Uhr: 4. Oktober 2026
+
+Die lokale Ruhezeit zeigt im entsperrten Pi-Kioskbrowser eine analoge oder digitale
+Uhr. Zeitplan, Weckdauer, Farbe und Darstellungshelligkeit sind PIN-geschützt unter
+lokalen Einstellungen konfigurierbar. Erste Berührung wird abgefangen; Interaktion
+verlängert die Weckdauer auch über Seitennavigation hinweg. Der Fotorahmen pausiert
+während der Ruhezeit. Änderungen werden alle 30 Sekunden lokal abgefragt.
+Der aktualisierte Monitor-Dienst hält den Bildschirm eingeschaltet und muss auf
+bestehenden Pi-Installationen separat ersetzt und neu gestartet werden.
+Keine Datenbankmigration, keine Synchronisation dieser lokalen Einstellungen.
+Python-Prüfungen und Diff-Prüfung erfolgreich; PHP-/Browserprüfung und reale
+Pi-Anzeige bleiben mangels Laufzeiten beziehungsweise Zielzugriff offen.
+
+## Externe Dienste und Verbindung: 4. Oktober 2026
+
+Das Einstellungsmenü bietet getrennte Schalter für automatischen Rezeptimport,
+automatische Übersetzung (beide Cyon) und Online-Produktsuche (je Instanz).
+Der bisherige .env-Schalter liefert nur den Startwert, solange der betreffende
+Menüwert nicht gespeichert ist. Import und Übersetzung laufen unabhängig;
+pausierter Import behält seinen Cursor. Produktcache bleibt bei deaktivierter
+Online-Suche nutzbar; auch Produktbilder werden dann nicht nachgeladen.
+
+Die lokalen Einstellungen bieten PIN-geschützte HTTPS-Adresse, verschlüsselt
+lokal gespeicherten Gerätezugang und einen lesenden Verbindungstest.
+Ein leeres Zugangsfeld behält den bisherigen Zugang; Serverwechsel erfordert
+erneute Eingabe. Laufender Abgleich sperrt Verbindungsänderungen. Synchronisation,
+Medienabgleich und Kontowiederherstellung verwenden dieselbe konfigurierte
+Verbindung. Geheimnisse werden weder angezeigt noch in Formularfehlern geflasht
+oder synchronisiert. Keine Migration und keine Änderung des Sync-Schemas nötig.
+Cyon erhält den zusätzlichen authentifizierten GET-Endpunkt /api/v1/device-check.
+
+Die Browserprüfung entdeckte eine durch die Uhr-Hintergrundabfrage veränderte
+Rücksprungadresse nach Formularaktionen. Die Hintergrundabfragen sind jetzt als
+AJAX markiert; das Speichern der Dienstschalter führt explizit zu Einstellungen.
+
+129 Tests mit 984 Assertions bestehen auf SQLite. 128 Tests mit 982 Assertions
+bestehen auf MariaDB 10.6.23; die anschliessend ergänzte Regression für die
+Rücksprungadresse besteht zusätzlich mit MonitorTest auf MariaDB (2 Tests, 9 Assertions).
+PHPStan Level 5, projektweite Pint-Prüfung, Ressourcenbuild und JavaScript-Syntax
+bestehen. 21 allgemeine Ansichtsprüfungen und die neuen Einstellungsabläufe bei
+1920, 390 und 320 Pixeln bestehen inklusive axe und Überlauf-/JavaScriptprüfung.
+Alle Datenbanken und Anbieterantworten waren isoliert beziehungsweise simuliert.
+Keine Bereitstellung oder reale Verbindung zu Cyon/Pi; Zielabnahme bleibt offen.
+Bedienung und Update-Reihenfolge: DEPLOYMENT.md.
+
+## Manueller Cyon-Datenbankexport: 4. Oktober 2026
+
+Unter Einstellungen bietet Cyon einen passwortgeschützten SQL-Datenbankdownload
+für eine Neuinstallation. Der Export umfasst Struktur und dauerhafte Daten aus
+einem konsistenten InnoDB-Snapshot, inklusive Konten, Gerätehashes und Sync-Verlauf.
+Batches begrenzen den Speicherbedarf; Binärwerte werden als Hexliterale geschrieben.
+Die Datei entsteht ausserhalb des Webroots, wird erst vollständig zum Download
+angeboten und danach gelöscht. Bei Lesefehlern werden Transaktion und Datei aufgeräumt;
+Fehlermeldungen enthalten keine SQL-Werte oder Zugangsdaten. Der Pi bietet diese
+Funktion nicht, unbestätigte Konten erhalten keinen Zugriff.
+
+SQL-Import erfolgt in eine neue, leere MariaDB über phpMyAdmin; kein destruktives
+DROP und keine Bindung an den alten Datenbanknamen. Sitzungen, Cache und Jobs
+bleiben leer, Remember-me-Zugänge werden entfernt und Wartung ist nach Import aktiv.
+Bilder und .env/APP_KEY müssen separat gesichert werden. Die Anleitung
+[DATENBANK-EXPORT.md](DATENBANK-EXPORT.md) beschreibt Neuinstallation ohne SSH,
+Cron-Prüfschritte, neue Sync-Epoche und anschliessenden kontrollierten Pi-Neuaufbau.
+Es handelt sich um einen manuellen Export, nicht um automatische Sicherungen.
+
+Vollständige Suite: 134 Tests auf SQLite (zwei MariaDB-spezifische Tests übersprungen)
+und 134 Tests auf MariaDB erfolgreich. Zusätzlich geprüfter SQL-Roundtrip erhält
+Sonderzeichen, Binärwerte, Dezimalzahlen, generierte Spalten und Fremdschlüssel und
+schliesst Änderungen nach Snapshotbeginn aus. Download, Dateilöschung und Fehler-
+Rollback sind geprüft. PHPStan/Pint und Browser/axe bei 1920, 390 und 320 Pixeln
+bestehen. Keine Ausführung oder Installation auf echtem Cyon; dessen Importoberfläche,
+reale Datenmenge und Pi-Wiederanlauf bleiben abzuklären.

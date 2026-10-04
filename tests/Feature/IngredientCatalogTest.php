@@ -67,6 +67,7 @@ final class IngredientCatalogTest extends TestCase
         app(IngredientCatalog::class)->install();
         self::assertSame(0, app(Catalog::class)->find($recipe)->feasibility['rank']);
         self::assertSame(0.0, app(Catalog::class)->find($recipe)->abv);
+        self::assertSame('Legacy bottle', app(Catalog::class)->find($recipe)->feasibility['lines'][0]['products'][0]->name);
         $this->assertDatabaseHas('ingredients', ['id' => $oldId]);
         $this->assertDatabaseHas('recipe_ingredients', ['recipe_id' => $recipe, 'ingredient_id' => $oldId]);
         self::assertFalse(app(IngredientCatalog::class)->choices()->contains('id', $oldId));

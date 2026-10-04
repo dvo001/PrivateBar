@@ -9,3 +9,5 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .page-heading>div{min-width:0;max-width:100%}h1{overflow-wrap:anywhere}@media(max-width:760px){.page-heading h1{font-size:clamp(2rem,10vw,2.9rem)}}
+
+#off-clock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000}#clock-digital{font-size:clamp(4rem,18vw,18rem);font-variant-numeric:tabular-nums;line-height:1}#clock-analog{width:min(70vw,75vh);height:min(70vw,75vh)}

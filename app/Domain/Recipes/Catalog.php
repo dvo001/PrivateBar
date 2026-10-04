@@ -19,7 +19,7 @@ final class Catalog
             ->select('ingredients.*', 'typical_abv')->get();
         $products = DB::table('bar_inventory')->join('products', 'bar_inventory.product_id', '=', 'products.id')
             ->join('product_ingredient_mappings', 'products.id', '=', 'product_ingredient_mappings.product_id')
-            ->orderBy('products.id')->get(['ingredient_id', 'abv']);
+            ->orderBy('products.id')->get(['ingredient_id', 'abv', 'products.name', 'products.brand', 'products.generic']);
         $identities = app(IngredientCatalog::class)->identities();
         $canonical = fn ($id) => $identities[$id] ?? $id;
         $available = $ingredients->where('automatic', true)->pluck('id')->merge($products->pluck('ingredient_id'))->map($canonical)->unique()->all();
@@ -28,15 +28,17 @@ final class Catalog
             $substitutions[$canonical($rule->required_id)][] = $canonical($rule->replacement_id);
         }
         $abv = [];
+        $barProducts = [];
         // Bei mehreren Flaschen deterministisch das erste Produkt mit bekanntem Wert.
         foreach ($products as $p) {
             $id = $canonical($p->ingredient_id);
+            $barProducts[$id][] = $p;
             if ($p->abv !== null && ! isset($abv[$id])) {
                 $abv[$id] = (float) $p->abv;
             }
         }
 
-        return $this->context = ['available' => $available, 'substitutions' => $substitutions, 'abv' => $abv, 'fallback' => $ingredients->pluck('typical_abv', 'id')->all(), 'names' => $ingredients->pluck('name', 'id')->all(), 'identities' => $identities];
+        return $this->context = ['available' => $available, 'substitutions' => $substitutions, 'abv' => $abv, 'products' => $barProducts, 'fallback' => $ingredients->pluck('typical_abv', 'id')->all(), 'names' => $ingredients->pluck('name', 'id')->all(), 'identities' => $identities];
     }
 
     public function decorate(object $recipe, array $lines): object
@@ -126,6 +128,13 @@ final class Catalog
         $lines = DB::table('recipe_ingredients')->join('ingredients', 'ingredient_id', '=', 'ingredients.id')->where('recipe_id', $id)->orderBy('position')
             ->get(['recipe_ingredients.*', 'ingredients.name'])->map(fn ($l) => (array) $l)->all();
 
-        return $this->decorate($recipe, $lines);
+        $recipe = $this->decorate($recipe, $lines);
+        $products = $this->context()['products'];
+        foreach ($recipe->feasibility['lines'] as &$line) {
+            $line['products'] = $products[$line['replacement_id'] ?? $line['ingredient_id']] ?? [];
+        }
+        unset($line);
+
+        return $recipe;
     }
 }

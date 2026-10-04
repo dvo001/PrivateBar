@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Providers;
 
+use App\Domain\Settings\Settings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -9,7 +10,7 @@ final class OpenDrinks implements RecipeProvider
 {
     public function batch(string $cursor): array
     {
-        if (config('privatebar.mode') !== 'cloud' || ! config('privatebar.providers_enabled')) {
+        if (config('privatebar.mode') !== 'cloud' || ! app(Settings::class)->serviceEnabled('recipe_import_enabled')) {
             throw new \RuntimeException('OpenDrinks ist noch nicht eingerichtet.');
         }
         $files = Cache::remember('opendrinks-file-list', 3600, fn () => Http::withHeaders(['Accept' => 'application/vnd.github+json'])->withUserAgent('PrivateBar/1.0')->connectTimeout(3)->timeout(15)

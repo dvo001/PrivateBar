@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Providers;
 
+use App\Domain\Settings\Settings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,7 +18,7 @@ final class OpenFoodFacts implements ProductProvider
         if ($cache) {
             return json_decode($cache->payload, true, 512, JSON_THROW_ON_ERROR);
         }
-        if (! config('privatebar.providers_enabled')) {
+        if (! app(Settings::class)->serviceEnabled('product_lookup_enabled')) {
             return null;
         }
         if (RateLimiter::tooManyAttempts('off-products', 60)) {

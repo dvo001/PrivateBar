@@ -1,5 +1,5 @@
 [Unit]
-Description=PrivateBar touchscreen monitor wake
+Description=Keep PrivateBar monitor powered for OFF clock
 After=graphical-session.target
 [Service]
 Type=simple

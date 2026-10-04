@@ -17,6 +17,8 @@ SERVICE_UNIT=${PRIVATEBAR_SERVICE_UNIT:-privatebar-tick.service}
 ARCHIVE=''
 VERSION=''
 TMP_DIR=''
+TARGET=''
+TARGET_CREATED=0
 TIMER_WAS_ACTIVE=0
 TIMER_RESTARTED=0
 LOG_FILE=''
@@ -59,6 +61,12 @@ cleanup_on_exit() {
 
     if [[ -n "$TMP_DIR" && -d "$TMP_DIR" ]]; then
         rm -rf -- "$TMP_DIR"
+    fi
+
+    # Bei einem Fehler vor dem Symlink-Wechsel keinen halb eingerichteten
+    # Release am endgültigen Pfad zurücklassen.
+    if (( status != 0 && TARGET_CREATED == 1 )) && [[ -d "$TARGET" ]]; then
+        rm -rf -- "$TARGET"
     fi
 
     if (( status != 0 && TIMER_WAS_ACTIVE == 1 && TIMER_RESTARTED == 0 )); then
@@ -163,7 +171,9 @@ ln -s "$SHARED/.env" "$TMP_DIR/.env"
 ln -s "$SHARED/storage" "$TMP_DIR/storage"
 # Die Cache-Dateien können aus einer Entwicklungsinstallation stammen und auf
 # Provider zeigen, die im Produktions-Vendor absichtlich nicht enthalten sind.
-# Laravel erzeugt sie mit optimize für genau diesen Release neu.
+# Laravel erzeugt sie mit optimize für genau diesen Release neu. Das geschieht
+# erst am endgültigen Releasepfad, damit keine temporären absoluten Pfade in
+# der Konfiguration landen.
 rm -f -- "$TMP_DIR/bootstrap/cache"/*.php
 install -d -o "$SERVICE_USER" -g "$SERVICE_USER" -m 0750 "$TMP_DIR/bootstrap/cache"
 chown -R "$SERVICE_USER:$SERVICE_USER" "$TMP_DIR"
@@ -177,18 +187,21 @@ else
 fi
 systemctl stop "$SERVICE_UNIT" >/dev/null 2>&1 || true
 
-printf 'Baue Laravel-Cache ...\n'
-run_as_service_user "$PHP_BIN" "$TMP_DIR/artisan" optimize
-printf 'Führe Gesundheitsprüfung aus ...\n'
-run_as_service_user "$PHP_BIN" "$TMP_DIR/artisan" privatebar:health
-
 OLD_TARGET=$(readlink -- "$CURRENT")
 mv -- "$TMP_DIR" "$TARGET"
 TMP_DIR=''
+TARGET_CREATED=1
+
+printf 'Baue Laravel-Cache ...\n'
+run_as_service_user "$PHP_BIN" "$TARGET/artisan" optimize
+printf 'Führe Gesundheitsprüfung aus ...\n'
+run_as_service_user "$PHP_BIN" "$TARGET/artisan" privatebar:health
+
 NEXT_LINK="$ROOT/.current.$$.next"
 rm -f -- "$NEXT_LINK"
 ln -s "releases/$VERSION" "$NEXT_LINK"
 mv -Tf -- "$NEXT_LINK" "$CURRENT"
+TARGET_CREATED=0
 printf 'current wurde atomar von %s auf releases/%s umgeschaltet.\n' "$OLD_TARGET" "$VERSION"
 
 if (( TIMER_WAS_ACTIVE == 1 )); then
