@@ -250,6 +250,11 @@ Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md)
 - Nach Pi-Rückmeldung `File not found` im Browser: Release-Wechselskript
   korrigiert die von `mktemp` geerbten Verzeichnisrechte `0700` auf `0755`,
   damit Nginx und PHP-FPM `public/index.php` erreichen. Shellsyntax geprüft.
+- Nach echtem Pi-Update mit wiederverwendetem 1.0.4-Installationsskript:
+  Laravel-Konfigurationscache verwies noch auf `.1.1.0.install.*`, was einen
+  HTTP-500-Fehler ohne Log im erwarteten Speicher auslöste. Nach Entfernen
+  dieses Caches lädt die Seite wieder. Das 1.1.0-Skript entfernt Caches am
+  endgültigen Releasepfad und prüft Log-/View-Pfade vor dem Umschalten.
 
 - Ressourcenbuild und Versionswechsel auf 1.1.0 erfolgreich. API-/Sync-Schema 1;
   keine neue Migration gegenüber 1.0.4. Freigabefelder bleiben false.

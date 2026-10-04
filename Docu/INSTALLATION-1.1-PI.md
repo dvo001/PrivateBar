@@ -223,6 +223,10 @@ von Monitor-Dienst und Kiosk ausführen. Der Browser muss privatebar.local direk
    Der Timer wird während des Wechsels angehalten. `.env` und `storage` bleiben
    gemeinsam erhalten. Cache und Gesundheitsprüfung erfolgen vor dem atomaren
    Umschalten von `current`; ein vorher aktiver Timer wird wieder gestartet.
+   Unbedingt das Skript aus dem **1.1.0-Paket** verwenden: Das ältere
+   `install-pi-release.sh` aus 1.0.4 konnte absolute Cachepfade zum temporären
+   Entpackordner hinterlassen. Das 1.1.0-Skript entfernt alte Cachedateien erst
+   nach dem Verschieben und prüft den endgültigen Pfad vor dem Umschalten.
    Bei einem bereits installierten 1.1.0-Release mit `File not found` im Browser
    die Rechte des aktiven Release-Ordners prüfen: Ein per `mktemp` angelegter
    Ordner mit `0700` sperrt Nginx und PHP-FPM aus. Der Ordner selbst muss

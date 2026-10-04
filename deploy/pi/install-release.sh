@@ -195,8 +195,26 @@ mv -- "$TMP_DIR" "$TARGET"
 TMP_DIR=''
 TARGET_CREATED=1
 
+# Erst jetzt stehen alle endgültigen Pfade fest. Alte Laravel-Caches können
+# absolute Pfade zum temporären Entpackordner enthalten.
+rm -f -- "$TARGET/bootstrap/cache"/*.php
 printf 'Baue Laravel-Cache ...\n'
 run_as_service_user "$PHP_BIN" "$TARGET/artisan" optimize
+if ! run_as_service_user "$PHP_BIN" -r '
+    require $argv[1]."/vendor/autoload.php";
+    $app = require $argv[1]."/bootstrap/app.php";
+    $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+    $logPath = config("logging.channels.daily.path");
+    $viewPath = config("view.compiled");
+    if (! is_string($logPath)
+        || ! str_starts_with($logPath, $argv[1]."/storage/")
+        || $viewPath !== realpath($argv[1]."/storage/framework/views")) {
+        exit(1);
+    }
+' "$TARGET"; then
+    fail 'Laravel-Cache enthält keinen endgültigen Releasepfad.'
+    exit 1
+fi
 printf 'Führe Gesundheitsprüfung aus ...\n'
 run_as_service_user "$PHP_BIN" "$TARGET/artisan" privatebar:health
 
