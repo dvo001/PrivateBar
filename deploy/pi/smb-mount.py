@@ -17,9 +17,11 @@ def artisan(*arguments):
 
 def main():
     config = json.loads(artisan('privatebar:smb-config'))
-    if not config.get('requested'):
-        return
     server, share = config.get('server') or '', config.get('share') or ''
+    # Mounts disappear after reboot; retry configured sources without a new UI request.
+    if not config.get('requested'):
+        if not server or not share or os.path.ismount(MOUNT):
+            return
     subpath = config.get('subpath') or ''
     if not re.fullmatch(r'[a-zA-Z0-9.-]{1,253}', server) or not re.fullmatch(r'[\w .-]{1,100}', share):
         artisan('privatebar:smb-result', 'error')

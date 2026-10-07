@@ -278,3 +278,28 @@ Reproduzierbare Befehle und Browserparameter stehen in [README](../../README.md)
 - Anwendungsstart, Produktionscache und Gesundheitsprüfung auch nach Entpacken
   der beiden Installationsarchive geprüft.
 - Keine Live-Abnahme, Installation auf Zielsystemen, Signatur oder Git-Tag.
+
+## Pi-Paket 1.1.1 am 7. Oktober 2026
+
+134 PHP-Tests / 1002 Assertions auf SQLite bestanden, zwei MariaDB-spezifische
+Tests mangels Server übersprungen. PHPStan Level 5 und Pint bestanden; optionale
+Turbo-Erweiterung im statischen PHP nicht ladbar, Analyse selbst erfolgreich.
+18 Python-Tests bestanden. Produktionsbibliotheken aus dem 1.1.0-Paket:
+76 Pakete ohne Entwicklungsabhängigkeiten; composer.lock bytegleich.
+Isoliertes Produktionsstaging: Migration/Seed, optimize und Healthcheck bestanden.
+21 reguläre Browser-/axe-Ansichten und Einstellungsabläufe inklusive PIN-Popup,
+Abbrechen und tatsächlich serverseitig gespeichertem Wert bei 1920, 390 und
+320 Pixeln bestanden; keine Überläufe, JavaScriptfehler oder erkannten axe-Verstösse.
+Die HTTP-Browserinstanz verwendete Produktionsbibliotheken und isolierte lokale
+Testkonfiguration; produktives HTTPS wird weiterhin erzwungen.
+Releaseinstaller mit echten Produktionsdateien/PHP in isolierter Testwurzel:
+Cachepfade/Healthcheck, Symlinkwechsel und Erhalt von .env/storage geprüft;
+Rootprüfung im Harness ausgelassen, Dienstbefehle simuliert und root-eigene
+Helferinstallation am Standardpfad dort nicht ausgeführt. Shellsyntax bestanden.
+Paketinhalt und SHA-256 geprüft; keine echte .env, Datenbank, privaten Bilder,
+Laufzeitcaches, Tests oder Entwicklungsbibliotheken enthalten.
+
+Die SMB-Korrektur ist laut Nutzer nach Pi-Neustart erfolgreich bestätigt.
+Keine Installation oder vollständige Pi-Abnahme des gebündelten 1.1.1-Pakets,
+keine neue MariaDB-/Cyon-Abnahme, kein Git-Tag und keine Signatur. Die
+Produktionsfreigabe bleibt gesperrt; manuelles Anwendungspaket vorbereitet.

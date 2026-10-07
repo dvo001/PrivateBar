@@ -1,5 +1,124 @@
 # Umsetzungsstand
 
+## Pi-Paket 1.1.1: 7. Oktober 2026
+
+Manuelles Pi-Installations-/Updatepaket unter artifacts/1.1.1/ mit
+Produktionsbibliotheken, aktuellem Frontend, Releaseinstaller und SHA-256.
+Update von 1.1.0 ohne Datenbankmigration; Cyon 1.1.0 und API-/Sync-Schema 1
+bleiben kompatibel. Änderungen/Anleitung: RELEASE-1.1.1-PI.md.
+Der Kiosk wartet auf die HTTPS-Anmeldung und verwendet Wayland-Eingabeoptionen.
+Der Installer aktualisiert zusätzlich den root-eigenen SMB-Helfer am Standardpfad.
+
+134 PHP-Tests / 1002 Assertions auf SQLite bestanden, zwei MariaDB-spezifische
+Tests mangels Server übersprungen. PHPStan Level 5 und Pint bestanden; optionale
+Turbo-Erweiterung im statischen PHP nicht ladbar, Analyse selbst erfolgreich.
+18 Python-Tests bestanden. Produktionsbibliotheken aus dem 1.1.0-Paket:
+76 Pakete ohne Entwicklungsabhängigkeiten; composer.lock bytegleich.
+Isoliertes Produktionsstaging: Migration/Seed, optimize und Healthcheck bestanden.
+21 reguläre Browser-/axe-Ansichten und Einstellungsabläufe inklusive PIN-Popup,
+Abbrechen und tatsächlich serverseitig gespeichertem Wert bei 1920, 390 und
+320 Pixeln bestanden; keine Überläufe, JavaScriptfehler oder erkannten axe-Verstösse.
+Die HTTP-Browserinstanz verwendete Produktionsbibliotheken und isolierte lokale
+Testkonfiguration; produktives HTTPS wird weiterhin erzwungen.
+Releaseinstaller mit echten Produktionsdateien/PHP in isolierter Testwurzel:
+Cachepfade/Healthcheck, Symlinkwechsel und Erhalt von .env/storage geprüft;
+Rootprüfung im Harness ausgelassen, Dienstbefehle simuliert und root-eigene
+Helferinstallation am Standardpfad dort nicht ausgeführt. Shellsyntax bestanden.
+Paketinhalt und SHA-256 geprüft; keine echte .env, Datenbank, privaten Bilder,
+Laufzeitcaches, Tests oder Entwicklungsbibliotheken enthalten.
+
+Die SMB-Korrektur ist laut Nutzer nach Pi-Neustart erfolgreich bestätigt.
+Keine Installation oder vollständige Pi-Abnahme des gebündelten 1.1.1-Pakets,
+keine neue MariaDB-/Cyon-Abnahme, kein Git-Tag und keine Signatur. Die
+Produktionsfreigabe bleibt gesperrt; manuelles Anwendungspaket vorbereitet.
+
+
+## SMB automatisch nach Neustart einbinden: 7. Oktober 2026
+
+Der SMB-Helfer bindet eine konfigurierte, nicht eingehängte Fotoquelle jetzt
+auch ohne neuen smb_mount_requested-Auftrag ein. Damit übernimmt der bestehende
+Minutentimer die Wiederherstellung nach einem Neustart und weitere Versuche nach
+einem fehlgeschlagenen Mount. Bereits eingebundene Quellen werden ohne
+ausdrücklichen Auftrag nicht ausgehängt. Unkonfigurierte Quellen bleiben inaktiv.
+Read-only-Optionen und Entfernen der temporären Zugangsdaten bleiben erhalten.
+Fünf isolierte Python-Tests bestehen: fehlender Mount nach Boot, vorhandener
+Mount, unkonfigurierte Quelle, expliziter Remount und erneuter Versuch nach Fehler.
+git diff --check bestanden; Installation des geänderten Helfers und
+Neustartprüfung auf dem echten Pi stehen noch aus.
+
+## PIN-Popup bei lokalen Aktionen: 7. Oktober 2026
+
+Auf der lokalen Einstellungsseite öffnet Speichern beziehungsweise Ausführen
+ein modales PIN-Popup mit eigenem Ziffernblock. Dies umfasst lokale Einstellungen,
+Pi–Cyon-Verbindung, Verbindungstests, Updateprüfung/-installation, Wartungsmodus
+und Onlinezugang-Wiederherstellung. Die aktuelle PIN wird erst im Popup abgefragt;
+das optionale Feld für eine neue PIN bleibt im Einstellungsformular.
+Jede Aktion erfordert eine frische, verdeckte sechsstellige Eingabe. Abbrechen
+und Escape lösen keinen Vorgang aus und erhalten die Einstellungen. Das Popup
+zeigt den gewählten Vorgang, setzt Tastaturfokus und löscht seine PIN beim
+Schliessen. Die ursprünglichen POST-Ziele, CSRF- und serverseitigen PIN-Prüfungen
+bleiben bestehen. Ohne JavaScript bleiben die bisherigen PIN-Felder verfügbar.
+
+Isolierte Chromium-Prüfung mit tatsächlichem Dialogmarkup, JavaScript und CSS
+bei 1920 × 1200, 390 und 320 Pixeln bestanden: kein Ausführen vor Bestätigung,
+unvollständige PIN abgewiesen, Abbrechen/Escape, Einstellungen erhalten, korrekte
+PIN/Formularwerte am passenden Ziel, PIN nicht wiederverwendet, Dialog im
+Viewport und kein horizontaler Überlauf oder JavaScriptfehler. Testskript:
+tests/Browser/pin-confirm.cjs. Vorhandene Browserabläufe verwenden nun physische
+Zifferntasten statt fill() an schreibgeschützten PIN-Feldern. Ressourcen und
+SHA-256-Manifest aktualisiert; JavaScript-Syntax und git diff --check bestanden.
+Keine PHP-Laufzeit, kein vollständiger Laravel-/axe-Lauf oder echte Pi-Abnahme.
+Noch nicht bereitgestellt.
+
+## Breiter Seiten-Scrollbalken: 7. Oktober 2026
+
+Der rechte Seiten-Scrollbalken ist in Chromium ab 761 Pixel Bildschirmbreite
+32 Pixel breit. Olivgrüner Griff auf dunkler Spur, gelber Hover- und Terrakotta-
+Aktivzustand passen zur Oberfläche. Eine stabile Scrollleiste verhindert
+Layoutsprünge beim Wechsel zwischen kurzen und langen Seiten.
+Isolierte Chromium-Prüfung mit dem tatsächlichen CSS bei 1920 × 1200, 390 und
+320 Pixeln: Desktopbreite 32 Pixel, schmale Ansichten ohne diese Verbreiterung,
+Scrollen möglich und kein horizontaler Überlauf. Ressourcen und Manifest
+aktualisiert; git diff --check bestanden. Keine Bereitstellung oder Pi-Abnahme.
+
+## Numerische PIN-Eingabe am Pi: 7. Oktober 2026
+
+Am direkt lokal erkannten Pi-Bildschirm erhalten alle PIN-Felder einen eigenen
+Ziffernblock mit 0–9, Leeren und Löschen der letzten Ziffer. Die PIN bleibt ein
+verdecktes Passwortfeld. Schreibschutz unterdrückt die zusätzliche Systemtastatur;
+vor dem Absenden wird die HTML-Validierung ausdrücklich geprüft. Eingaben bleiben
+auf sechs Ziffern begrenzt, führende Nullen erhalten. Physische Zifferntasten und
+Backspace/Delete funktionieren ebenfalls. Ohne JavaScript oder bei Zugriff aus
+dem Heimnetz bleibt das bisherige Passwortfeld mit inputmode=numeric bestehen.
+Der Ziffernblock ist auch auf der lokalen Wartungsseite verfügbar.
+
+JavaScript-Syntax und isolierte Chromium-Browserprüfung mit den tatsächlichen
+Frontend-Dateien bei 1920 × 1200, 390 und 320 Pixeln bestanden: führende Null,
+sechsstellige Begrenzung, Löschen, physische Tastatur, Pflicht-PIN, unvollständige
+optionale neue PIN, gültige Formularwerte und kein horizontaler Überlauf.
+Testskript: tests/Browser/pin.cjs (node tests/Browser/pin.cjs; optional
+PRIVATEBAR_BROWSER_EXECUTABLE für eine vorhandene Chromium-Installation).
+Ressourcenbuild und SHA-256-Manifest aktualisiert; git diff --check bestanden.
+Kein vollständiger Laravel-/axe-Prüflauf, keine PHP-Laufzeit verfügbar und keine
+Prüfung mit Squeekboard auf dem echten Pi. Noch nicht bereitgestellt.
+
+## Grössere Pi-Oberfläche: 7. Oktober 2026
+
+Für Bildschirmbreiten ab 761 CSS-Pixeln sind Grundschrift (16 → rund 21.33 Pixel),
+Button-/Eingabefeldabstände und Mindesthöhen um ein Drittel vergrössert.
+Buttons und Eingabefelder sind mindestens 64 statt 48 Pixel hoch; Checkboxen
+32 statt 24 Pixel gross. Überschriften, Beschriftungen und Navigationsschrift
+skalieren mit. Die Seitennavigation ist entsprechend breiter; bei 1920 × 1200
+stehen drei statt vier Rezeptkarten nebeneinander. Zwischen 761 und 1150 Pixeln
+werden enge Inhaltsraster einspaltig. Smartphoneansichten bis 760 Pixel behalten
+ihre bisherigen Grössen.
+
+Quell-CSS und öffentliche Ressourcen inklusive SHA-256-Manifest sind aktualisiert.
+Ressourcenintegrität und `git diff --check` sind geprüft. PHP-/Node-/Browserlaufzeit
+stehen in dieser Sitzung nicht bereit; die Browser-/axe-Prüfung bei 1920 × 1200,
+390 und 320 Pixeln sowie die tatsächliche Lesbarkeit/Touchbedienung auf dem Pi
+bleiben offen. Keine Bereitstellung oder Aktualisierung der Releasepakete.
+
 ## Version 1.1.0: 4. Oktober 2026
 
 Manuelle Cyon-Installations-/Updatepakete und Pi-Installations-/Updatepaket

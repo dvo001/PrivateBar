@@ -282,6 +282,12 @@ nur einen kurzen Hintergrundlauf an und blockiert die Oberfläche nicht.
 
 ### SMB-Fotorahmen
 
+Der SMB-Timer bindet konfigurierte Fotoquellen auch nach einem Neustart
+automatisch wieder ein, wenn der Mount fehlt. Bereits eingebundene Freigaben
+werden nur bei einem expliziten Speichern-/Testauftrag erneut eingehängt.
+Fehlgeschlagene automatische Mounts werden beim nächsten Timerlauf wiederholt.
+
+
 `deploy/pi/smb-mount.py` root-eigen nach `/usr/local/lib/privatebar/` kopieren und
 `privatebar-smb.service/.timer` installieren. Der Helfer läuft kurz als Root,
 liest die verschlüsselte Konfiguration über das Anwendungskonto, schreibt

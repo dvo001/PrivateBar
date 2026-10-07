@@ -232,4 +232,11 @@ if (( TIMER_WAS_ACTIVE == 1 )); then
     printf '%s ist wieder aktiv.\n' "$TIMER_UNIT"
 fi
 
+# Der root-eigene SMB-Helfer liegt ausserhalb der Releases und muss mitwechseln.
+if [[ "$ROOT" == '/srv/privatebar' ]]; then
+    install -d -o root -g root -m 0755 /usr/local/lib/privatebar
+    install -o root -g root -m 0755 "$TARGET/deploy/pi/smb-mount.py" /usr/local/lib/privatebar/smb-mount.py
+    printf 'Root-eigener SMB-Helfer aktualisiert.\n'
+fi
+
 printf 'Release %s erfolgreich installiert.\n' "$VERSION"

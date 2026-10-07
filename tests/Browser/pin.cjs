@@ -1,0 +1,45 @@
+const {chromium}=require('playwright');
+const fs=require('fs');
+const assert=require('assert/strict');
+const path=require('path');
+const base=path.resolve(__dirname, '../..') + path.sep;
+(async()=>{
+ const browser=await chromium.launch({headless:true,executablePath:process.env.PRIVATEBAR_BROWSER_EXECUTABLE || undefined});
+ for(const width of [1920,390,320]){
+ const page=await browser.newPage({viewport:{width,height:1200}});
+ await page.setContent(`<body data-local-display="1"><main><form class="form-stack"><label>PIN<input type="password" name="pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><label>Neue PIN<input type="password" name="new_pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"></label><button type="submit">Speichern</button></form></main></body>`);
+ await page.addStyleTag({content:fs.readFileSync(base+'resources/css/app.css','utf8')});
+ await page.addScriptTag({content:fs.readFileSync(base+'resources/js/app.js','utf8')});
+ await page.evaluate(()=>{window.sent=[];document.querySelector('form').addEventListener('submit',e=>{if(!e.defaultPrevented)window.sent.push(Object.fromEntries(new FormData(e.target)));e.preventDefault();});});
+ const field=page.locator('[name=pin]');
+ await field.click();
+ const pad=page.locator('.pin-keypad').first();
+ assert.equal(await pad.locator('button').count(),12);
+ await page.getByRole('button',{name:'Speichern',exact:true}).click();
+ assert.equal(await page.evaluate(()=>sent.length),0,'required PIN must block submit');
+ await field.click();
+ for(const n of ['0','1','2','3','4','5','6'])await pad.getByRole('button',{name:n,exact:true}).click();
+ assert.equal(await field.inputValue(),'012345','leading zero preserved and capped at six digits');
+ await pad.getByRole('button',{name:'Letzte Ziffer löschen'}).click();
+ assert.equal(await field.inputValue(),'01234');
+ await pad.getByRole('button',{name:'5',exact:true}).click();
+ await field.press('Backspace');await field.press('5');
+ assert.equal(await field.inputValue(),'012345','physical keyboard supported');
+ await page.locator('[name=new_pin]').click();
+ const other=page.locator('.pin-keypad').nth(1);
+ await other.getByRole('button',{name:'1',exact:true}).click();
+ await page.getByRole('button',{name:'Speichern',exact:true}).click();
+ assert.equal(await page.evaluate(()=>sent.length),0,'incomplete optional PIN must block submit');
+ await page.locator('[name=new_pin]').click();await other.getByRole('button',{name:'Leeren',exact:true}).click();
+ await page.getByRole('button',{name:'Speichern',exact:true}).click();
+ assert.deepEqual(await page.evaluate(()=>sent[0]),{pin:'012345',new_pin:''});
+ await field.click();
+ assert.equal(await field.getAttribute('type'),'password');
+ assert.equal(await field.evaluate(e=>e.readOnly),true);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ console.log(`PIN-Interaktion, Pflicht-/optionale Validierung und Layout: ${width}px OK`);
+ await page.close();
+ }
+ const page=await browser.newPage();await page.setContent('<body data-local-display="0"><input type="password" name="pin" inputmode="numeric"></body>');await page.addScriptTag({content:fs.readFileSync(base+'resources/js/app.js','utf8')});assert.equal(await page.locator('.pin-keypad').count(),0);assert.equal(await page.locator('input').evaluate(e=>e.readOnly),false);console.log('Heimnetz-/Cloud-Fallback unverändert: OK');
+ await browser.close();
+})().catch(e=>{console.error(e);process.exit(1);});

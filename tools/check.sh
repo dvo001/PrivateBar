@@ -8,3 +8,5 @@ bash -n deploy/pi/install-prerequisites.sh
 sh -n deploy/pi/kiosk.sh
 python3 tests/Unit/test_pi_prerequisites.py
 python3 tests/Unit/test_monitor.py
+python3 tests/Unit/test_smb_mount.py
+python3 tests/Unit/test_kiosk.py

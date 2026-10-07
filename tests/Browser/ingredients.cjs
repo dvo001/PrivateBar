@@ -14,7 +14,7 @@ if (!url || !pin) throw new Error('Isolierte Testinstanz und Test-PIN angeben.')
     page.on('pageerror', error => errors.push(error.message));
     try {
         await page.goto(url + '/anmelden');
-        await page.locator('[name=pin]').fill(pin);
+        await page.locator('[name=pin]').pressSequentially(pin);
         await page.getByRole('button', { name: 'Bar öffnen' }).click();
         await page.waitForURL(url + '/');
         await page.goto(url + '/meine-bar/neu');

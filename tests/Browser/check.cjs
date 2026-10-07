@@ -14,7 +14,7 @@ fs.mkdirSync(out, {recursive:true});
   const context=await browser.newContext({viewport}); const page=await context.newPage(); const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url + '/anmelden');
-  await page.locator('input[name="pin"]').fill(pin); await page.getByRole('button',{name:'Bar öffnen'}).click(); await page.waitForURL(url + '/');
+  await page.locator('input[name="pin"]').pressSequentially(pin); await page.getByRole('button',{name:'Bar öffnen'}).click(); await page.waitForURL(url + '/');
   for (const path of ['/','/entdecken','/meine-bar','/meine-bar/neu','/einkaufsliste','/rezepte/neu','/einstellungen']) {
     const start=Date.now(); await page.goto(url + path); const elapsed=Date.now()-start;
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth);

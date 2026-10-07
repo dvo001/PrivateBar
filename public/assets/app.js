@@ -1,4 +1,103 @@
 'use strict';
+
+// Eigener Ziffernblock: Wayland-Tastaturen beachten inputmode bei Passwortfeldern nicht immer.
+if (document.body.dataset.localDisplay === '1') {
+    const pinDialog = document.querySelector('#local-pin-confirm');
+    const confirmationForms = pinDialog && typeof pinDialog.showModal === 'function'
+        ? [...document.querySelectorAll('form[data-pin-confirm]')] : [];
+    for (const form of confirmationForms) {
+        const pin = form.querySelector('input[name="pin"]');
+        pin.closest('label').hidden = true;
+        pin.type = 'hidden';
+        pin.value = '';
+    }
+    const pinFields = [...document.querySelectorAll('input[type="password"][inputmode="numeric"]')]
+        .filter(field => ['pin', 'new_pin'].includes(field.name));
+    const pads = new Map();
+    for (const field of pinFields) {
+        const pad = document.createElement('div');
+        pad.className = 'pin-keypad';
+        pad.setAttribute('role', 'group');
+        pad.setAttribute('aria-label', 'Ziffernblock für Kiosk-PIN');
+        pad.hidden = true;
+        // Schreibschutz verhindert die zusätzliche Betriebssystemtastatur.
+        field.readOnly = true;
+        field.dataset.pinKeypadField = '1';
+        const edit = key => {
+            if (key === 'clear') field.value = '';
+            else if (key === 'erase') field.value = field.value.slice(0, -1);
+            else if (field.value.length < 6) field.value += key;
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+        for (const key of ['1','2','3','4','5','6','7','8','9','clear','0','erase']) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = key === 'clear' ? 'Leeren' : key === 'erase' ? '⌫' : key;
+            if (key === 'erase') button.setAttribute('aria-label', 'Letzte Ziffer löschen');
+            button.addEventListener('click', () => edit(key));
+            pad.append(button);
+        }
+        field.closest('label').after(pad);
+        pads.set(field, pad);
+        field.addEventListener('keydown', event => {
+            if (event.ctrlKey || event.metaKey || event.altKey) return;
+            if (/^[0-9]$/.test(event.key)) { event.preventDefault(); edit(event.key); }
+            else if (event.key === 'Backspace') { event.preventDefault(); edit('erase'); }
+            else if (event.key === 'Delete') { event.preventDefault(); edit('clear'); }
+        });
+    }
+    document.addEventListener('focusin', event => {
+        if (!pads.has(event.target)) return;
+        for (const [field, pad] of pads) pad.hidden = event.target !== field;
+    });
+    for (const [field, pad] of pads) if (document.activeElement === field) pad.hidden = false;
+    for (const form of new Set(pinFields.map(field => field.form))) {
+        if (!form) continue;
+        form.addEventListener('submit', event => {
+            const fields = pinFields.filter(field => field.form === form);
+            // Readonly-Felder sind von HTML-Validierung ausgenommen: vor dem Senden prüfen.
+            fields.forEach(field => { field.readOnly = false; });
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                form.reportValidity();
+            }
+            fields.forEach(field => { field.readOnly = true; });
+        });
+    }
+    if (confirmationForms.length) {
+        const dialogForm = pinDialog.querySelector('form');
+        const dialogPin = dialogForm.querySelector('input[name="pin"]');
+        let pending = null, approved = null;
+        for (const form of confirmationForms) {
+            form.addEventListener('submit', event => {
+                if (event.defaultPrevented) return;
+                if (approved === form) { approved = null; return; }
+                event.preventDefault();
+                pending = { form, submitter: event.submitter };
+                dialogPin.value = '';
+                pinDialog.querySelector('#local-pin-action').textContent = event.submitter?.textContent.trim() || 'Aktion ausführen';
+                pinDialog.showModal();
+                dialogPin.focus();
+            });
+        }
+        dialogForm.addEventListener('submit', event => {
+            if (event.defaultPrevented) return;
+            event.preventDefault();
+            if (!pending || !/^[0-9]{6}$/.test(dialogPin.value)) return;
+            const { form, submitter } = pending;
+            const targetPin = form.querySelector('input[name="pin"]');
+            targetPin.value = dialogPin.value;
+            pending = null;
+            approved = form;
+            pinDialog.close();
+            dialogPin.value = '';
+            try { form.requestSubmit(submitter || undefined); }
+            finally { targetPin.value = ''; approved = null; }
+        });
+        pinDialog.querySelector('#local-pin-cancel').addEventListener('click', () => pinDialog.close());
+        pinDialog.addEventListener('close', () => { pending = null; dialogPin.value = ''; });
+    }
+}
 document.querySelectorAll('[data-ingredient-picker]').forEach(picker => {
     const select = picker.querySelector('[data-ingredient-select]');
     const category = picker.querySelector('[data-ingredient-category]');

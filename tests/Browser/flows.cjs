@@ -6,7 +6,7 @@ if (!url || !pin) throw new Error('Testinstanz und Test-PIN setzen. Dieser Test 
 (async()=>{
  const browser=await chromium.launch(); const context=await browser.newContext({viewport:{width:390,height:844}});const page=await context.newPage();
  try {
- await page.goto(url + '/anmelden');await page.locator('[name=pin]').fill(pin);await page.getByRole('button',{name:'Bar öffnen'}).click();
+ await page.goto(url + '/anmelden');await page.locator('[name=pin]').pressSequentially(pin);await page.getByRole('button',{name:'Bar öffnen'}).click();
  await page.goto(url + '/meine-bar/neu');await page.locator('[name=name]').fill('Prüfung Gin');await page.locator('[name=ingredient_id]').selectOption({label:'Gin'});await page.locator('[name=abv]').fill('40');await page.locator('[name=confirmed]').check();await page.getByRole('button',{name:'Flasche bestätigen'}).click();await page.waitForURL('**/meine-bar');assert(await page.getByRole('heading',{name:'Prüfung Gin'}).isVisible());
  await page.goto(url + '/entdecken?q=Gin%20Tonic');await page.locator('.recipe-card a').first().click();assert(await page.getByRole('heading',{name:'Gin Tonic',exact:true}).isVisible());
  await page.getByRole('button',{name:'Alle fehlenden Zutaten einkaufen'}).click();await page.goto(url + '/einkaufsliste');await page.getByRole('button',{name:'✓ Gekauft'}).click();await page.goto(url + '/machbar');assert(await page.getByRole('heading',{name:'Gin Tonic',exact:true}).isVisible());
