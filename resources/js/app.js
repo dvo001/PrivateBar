@@ -213,7 +213,7 @@ if (frame) {
     const clock = document.querySelector('#off-clock');
     // Ruheanzeige nur am Pi selbst, nicht in Browsern im Heimnetz.
     const localDisplay = document.body.dataset.localDisplay === '1';
-    let monitor = null, wakeUntil = 0;
+    let monitor = null, wakeUntil = 0, manualDisplay = null;
     try { wakeUntil = Number(sessionStorage.getItem('monitor-wake-until')) || 0; } catch { /* Storage optional. */ }
     const activity = () => {
         lastActivity = Date.now();
@@ -273,6 +273,7 @@ if (frame) {
         } catch { if (run === generation && !frame.hidden) timer = setTimeout(() => load(run), 10000); }
     };
     function wake() {
+        manualDisplay = null;
         generation += 1; clearTimeout(timer); frame.hidden = true;
         document.querySelector('main').inert = false;
         document.querySelector('.sidebar').inert = false;
@@ -280,6 +281,23 @@ if (frame) {
         frame.setAttribute('aria-label', 'Fotorahmen. Zum Zurückkehren berühren.');
         activity(); savedFocus?.focus({ preventScroll: true });
     }
+    document.querySelectorAll('[data-display]').forEach(button => button.addEventListener('click', async () => {
+        if (!localDisplay || critical()) return;
+        const mode = button.dataset.display;
+        if (mode === 'clock' && !monitor) await refreshMonitor();
+        if (mode === 'clock' && !monitor) return;
+        if (!frame.hidden || critical()) return;
+        manualDisplay = mode;
+        savedFocus = button;
+        generation += 1; clearTimeout(timer);
+        a.hidden = mode === 'clock'; b.hidden = mode === 'clock';
+        clock.hidden = mode !== 'clock'; frame.hidden = false;
+        document.querySelector('main').inert = true;
+        document.querySelector('.sidebar').inert = true;
+        frame.focus();
+        if (mode === 'clock') updateClock();
+        else load(generation);
+    }));
     // Die gesamte erste Berührung einschliesslich des folgenden Klicks abfangen.
     let suppressUntil = 0;
     ['pointerdown','pointerup','click','touchstart','touchend','keydown'].forEach(type => {
@@ -294,7 +312,8 @@ if (frame) {
     });
     ['pointermove','wheel','input'].forEach(type => document.addEventListener(type, () => { if (frame.hidden) activity(); }, { passive: true }));
     setInterval(() => {
-        const showClock = resting() && Date.now() >= wakeUntil;
+        if (manualDisplay === 'photos') return;
+        const showClock = manualDisplay === 'clock' || (resting() && Date.now() >= wakeUntil);
         if (showClock && !document.hidden) {
             if (frame.hidden || clock.hidden) {
                 savedFocus = frame.hidden ? document.activeElement : savedFocus;

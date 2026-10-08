@@ -64,3 +64,10 @@
 }
 
 .pin-dialog{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius);width:min(560px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:24px;overflow-y:auto}.pin-dialog::backdrop{background:rgb(0 0 0 / .75)}.pin-dialog .form-stack{gap:16px}.pin-dialog h2,.pin-dialog p{margin-bottom:0}.pin-dialog .pin-keypad{max-width:none}
+
+.sidebar-status{display:flex;align-items:center;justify-content:space-between;gap:8px}.sidebar-location{white-space:nowrap}.display-actions{display:flex;gap:8px}.display-actions button{width:44px;height:44px;min-height:44px;flex-shrink:0;padding:9px;border-radius:10px;color:var(--yellow)}.display-actions svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+
+html:has(#photo-frame:not([hidden])){overflow:hidden;scrollbar-gutter:auto;scrollbar-width:none}
+html:has(#photo-frame:not([hidden]))::-webkit-scrollbar{display:none;width:0;height:0}
+body:has(#photo-frame:not([hidden])){overflow:hidden}

@@ -17,7 +17,13 @@
         <a href="{{ $href }}" @if(request()->routeIs($route)) aria-current="page" @endif><span class="nav-icon" aria-hidden="true">{{ $icon }}</span>{{ $label }}</a>
     @endforeach
     </nav>
-    <div class="sidebar-bottom"><span class="mode-dot"></span>{{ config('privatebar.mode') === 'pi' ? 'Zu Hause' : 'Unterwegs' }}
+    <div class="sidebar-bottom"><div class="sidebar-status"><span class="sidebar-location"><span class="mode-dot"></span>{{ config('privatebar.mode') === 'pi' ? 'Zu Hause' : 'Unterwegs' }}</span>
+    @if(config('privatebar.mode') === 'pi' && session('kiosk_unlocked') && in_array(request()->server('REMOTE_ADDR'), ['127.0.0.1', '::1'], true))
+    <div class="display-actions" aria-label="Anzeige öffnen">
+        <button type="button" data-display="photos" aria-label="Fotorahmen öffnen" title="Fotorahmen öffnen"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 6-6 4 4 3-3 5 5"/></svg></button>
+        <button type="button" data-display="clock" aria-label="Uhr öffnen" title="Uhr öffnen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg></button>
+    </div>
+    @endif</div>
     @if(session('kiosk_unlocked') || auth()->check())<form method="post" action="/abmelden">@csrf<button class="quiet" type="submit">{{ auth()->check() ? 'Abmelden' : 'Bar sperren' }}</button></form>@endif</div>
 </aside>
 <div class="mobile-header"><a href="/"><img src="/assets/logo.svg" alt="PrivateBar" width="135" height="64"></a><button type="button" id="nav-toggle" aria-expanded="false" aria-controls="mobile-nav">Menü <span aria-hidden="true">☰</span></button></div>

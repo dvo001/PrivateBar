@@ -1,5 +1,24 @@
 # Umsetzungsstand
 
+## Pi-Paket 1.1.3: 8. Oktober 2026
+
+Eigenes manuelles Updatepaket unter `artifacts/1.1.3/` mit Scrollbalken-Korrektur
+für Uhr/Fotorahmen und den Direktbuttons. Anleitung: [Release 1.1.3](RELEASE-1.1.3-PI.md).
+Installer verwendet den neuen Pfad `releases/1.1.3`; 1.1.2 bleibt erhalten.
+Version und User-Agent angepasst; unveränderte Migrationen/API/Sync.
+Shellsyntax, JavaScript-Syntax, 18 Python-Tests, Paketinhalt und Prüfsummen
+geprüft. PHP-/Browser-/MariaDB-Prüfungen nicht wiederholt, Zielsystemabnahme offen.
+
+## Pi-Paket 1.1.2: 8. Oktober 2026
+
+Manuelles Updatepaket mit Direktbuttons für Fotorahmen/Uhr unter
+`artifacts/1.1.2/`. Anleitung: [Release 1.1.2](RELEASE-1.1.2-PI.md).
+Version und User-Agent auf 1.1.2 angehoben; keine neue Migration oder API-Änderung.
+Produktionsbibliotheken aus dem bestehenden 1.1.1-Paket bei unverändertem Lockfile.
+JavaScript-Syntax, isolierte Anzeigeabläufe, 18 Python-Tests, Shellsyntax und
+Paketintegrität geprüft. PHP-/MariaDB-/Browser-/axe-Prüfungen nicht erneut
+ausgeführt; keine Zielsystemabnahme und keine signierte Produktionsfreigabe.
+
 ## Pi-Paket 1.1.1: 7. Oktober 2026
 
 Manuelles Pi-Installations-/Updatepaket unter artifacts/1.1.1/ mit
@@ -399,3 +418,27 @@ schliesst Änderungen nach Snapshotbeginn aus. Download, Dateilöschung und Fehl
 Rollback sind geprüft. PHPStan/Pint und Browser/axe bei 1920, 390 und 320 Pixeln
 bestehen. Keine Ausführung oder Installation auf echtem Cyon; dessen Importoberfläche,
 reale Datenmenge und Pi-Wiederanlauf bleiben abzuklären.
+
+## Direkter Aufruf von Fotorahmen und Uhr: 8. Oktober 2026
+
+Rechts neben «Zu Hause» stehen am entsperrten, direkt lokal erkannten Pi zwei
+quadratische 44-Pixel-Schaltflächen mit beschrifteten Bild-/Uhrsymbolen. Sie öffnen
+den vorhandenen Fotorahmen beziehungsweise die konfigurierte analoge/digitale Uhr
+sofort, auch ausserhalb des Ruhezeitplans. Die erste Berührung schliesst die Anzeige
+ohne darunterliegende Aktionen; der Fokus kehrt zum Auslöser zurück. Kritische
+Dialoge verhindern den manuellen Start weiterhin. Der Zeitplan bleibt unverändert.
+
+JavaScript-Syntax mit Node 24.16.0 und `git diff --check` erfolgreich.
+Isolierter JavaScript-Ablauftest bestätigt manuellen Uhrstart ohne aktiven
+Zeitplan, Fortbestand der Anzeige, Aufwecken und manuellen Fotorahmenstart.
+Assets und SHA-256-Manifest mangels PHP-Laufzeit nach dem Verfahren von
+`tools/build.php` mit Python erzeugt. Browser-/Touchprüfung sowie Pi-Abnahme
+stehen noch aus; Playwright und PHP sind in dieser Umgebung nicht installiert.
+
+## Scrollbalken in Fotorahmen/Uhr: 8. Oktober 2026
+
+Solange die gemeinsame Vollbildanzeige sichtbar ist, blendet CSS den
+Dokument-Scrollbalken und dessen reservierten Platz aus und sperrt das Scrollen
+der darunterliegenden Seite. Das gilt für manuellen und automatischen Start.
+Beim Schliessen gelten automatisch wieder die normalen Scrollregeln.
+Ressourcen und manuelles Pi-Paket 1.1.2 aktualisiert; physische Pi-Prüfung offen.
