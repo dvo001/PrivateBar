@@ -1,6 +1,8 @@
 # PrivateBar
 
-Pi-Version 1.1.3: [Pi-Paket und Update](Docu/RELEASE-1.1.3-PI.md). Cyon-Version 1.1.0: [Cyon installieren/aktualisieren](Docu/INSTALLATION-1.1-CYON.md) · [Pi installieren/aktualisieren](Docu/INSTALLATION-1.1-PI.md) · [Paketübersicht](Docu/RELEASE-1.1.md).
+Version 1.2.0 als manueller Prüfkandidat: [API Ninjas, Cyon-/Pi-Update und Konfiguration](Docu/RELEASE-1.2.0.md).
+
+Bisherige Pi-Version 1.1.3: [Pi-Paket und Update](Docu/RELEASE-1.1.3-PI.md). Cyon-Version 1.1.0: [Cyon installieren/aktualisieren](Docu/INSTALLATION-1.1-CYON.md) · [Pi installieren/aktualisieren](Docu/INSTALLATION-1.1-PI.md) · [Paketübersicht](Docu/RELEASE-1.1.md).
 
 Private Hausbar für Raspberry Pi und Cyon: PHP 8.3, Laravel 13, Blade und MariaDB.
 Dunkle deutsche Touchoberfläche, lokale Kernfunktionen ohne Internet, keine SPA,

@@ -47,7 +47,7 @@ final class SyncClient
                     }
                     $this->uploadMedia($url, $event['payload']['image_path'] ?? null, $token);
                 }
-                $result = Http::withToken($token)->withoutRedirecting()->connectTimeout(3)->timeout(20)->post($url.'/api/v1/sync', ['schema_version' => 1, 'epoch' => $cursor?->epoch, 'cursor' => $cursor->cursor ?? 0, 'events' => $events])->throw()->json();
+                $result = Http::withToken($token)->withoutRedirecting()->connectTimeout(3)->timeout(20)->post($url.'/api/v1/sync', ['schema_version' => 1, 'api_ninjas_sources' => true, 'epoch' => $cursor?->epoch, 'cursor' => $cursor->cursor ?? 0, 'events' => $events])->throw()->json();
                 if (($result['schema_version'] ?? null) !== 1) {
                     throw new \RuntimeException('Nicht unterstützte Serverversion.');
                 }

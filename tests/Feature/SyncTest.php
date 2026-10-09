@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Domain\Recipes\Importer;
 use App\Domain\Sync\Projector;
 use App\Domain\Sync\SyncClient;
 use App\Domain\Sync\SyncServer;
@@ -38,6 +39,24 @@ final class SyncTest extends TestCase
     private function event(bool $deleted = false): array
     {
         return ['id' => (string) Str::uuid(), 'entity' => 'shopping', 'entity_id' => DatabaseSeeder::id('Gin'), 'payload' => [], 'deleted' => $deleted];
+    }
+
+    public function test_api_ninjas_sources_are_delivered_only_to_capable_clients(): void
+    {
+        $id = app(Importer::class)->ingest([
+            'provider' => 'api-ninjas', 'external_id' => 'test', 'name' => 'New source test',
+            'instructions' => 'Stir.', 'language' => 'en', 'ingredients' => [['name' => 'gin', 'measure' => '2 cl']],
+            'url' => 'https://api-ninjas.com/api/cocktail', 'license' => 'API Ninjas', 'original' => ['test' => true],
+        ]);
+        $old = $this->exchange([]);
+        $new = app(SyncServer::class)->exchange(['schema_version' => 1, 'api_ninjas_sources' => true, 'cursor' => 0, 'events' => []], $this->device);
+        $oldRecipe = collect($old['events'])->firstWhere('entity_id', $id);
+        $newRecipe = collect($new['events'])->firstWhere('entity_id', $id);
+        self::assertSame([], $oldRecipe['payload']['sources']);
+        self::assertSame('api-ninjas', $newRecipe['payload']['sources'][0]['provider']);
+        self::assertSame($old['cursor'], $new['cursor']);
+        app(Projector::class)->validate('recipe', $id, $newRecipe['payload'], false);
+        self::assertSame('api-ninjas', DB::table('recipe_sources')->where('recipe_id', $id)->value('provider'));
     }
 
     public function test_retry_conflicts_tombstones_and_cursor_are_idempotent(): void

@@ -19,7 +19,7 @@ final class Importer
         if (config('privatebar.mode') !== 'cloud') {
             throw new \RuntimeException('Rezeptimporte laufen ausschliesslich auf Cyon.');
         }
-        Validator::make($dto, ['provider' => 'required|in:cocktaildb,opendrinks', 'external_id' => 'required|string|max:255', 'name' => 'required|string|max:255', 'instructions' => 'required|string|max:50000', 'ingredients' => 'required|array|min:1|max:50', 'ingredients.*.name' => 'required|string|max:255', 'url' => 'required|url:https|max:255', 'license' => 'required|string', 'language' => 'required|string|max:10'])->validate();
+        Validator::make($dto, ['provider' => 'required|in:cocktaildb,opendrinks,api-ninjas', 'external_id' => 'required|string|max:255', 'name' => 'required|string|max:255', 'instructions' => 'required|string|max:50000', 'ingredients' => 'required|array|min:1|max:50', 'ingredients.*.name' => 'required|string|max:255', 'url' => 'required|url:https|max:255', 'license' => 'required|string', 'language' => 'required|string|max:10'])->validate();
 
         return DB::transaction(function () use ($dto) {
             $this->settings->assertRunning();

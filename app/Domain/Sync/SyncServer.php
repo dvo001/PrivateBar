@@ -16,7 +16,7 @@ final class SyncServer
     {
         $this->settings->assertRunning();
         abort_unless(config('privatebar.mode') === 'cloud', 404);
-        Validator::make($request, ['schema_version' => 'required|integer|in:1', 'cursor' => 'required|integer|min:0', 'epoch' => 'nullable|uuid', 'events' => 'present|array|max:50', 'events.*.id' => 'required|uuid', 'events.*.entity' => 'required|string|max:40', 'events.*.entity_id' => 'required|string|max:100', 'events.*.payload' => 'present|array', 'events.*.deleted' => 'required|boolean'])->validate();
+        Validator::make($request, ['api_ninjas_sources' => 'sometimes|boolean', 'schema_version' => 'required|integer|in:1', 'cursor' => 'required|integer|min:0', 'epoch' => 'nullable|uuid', 'events' => 'present|array|max:50', 'events.*.id' => 'required|uuid', 'events.*.entity' => 'required|string|max:40', 'events.*.entity_id' => 'required|string|max:100', 'events.*.payload' => 'present|array', 'events.*.deleted' => 'required|boolean'])->validate();
 
         return DB::transaction(function () use ($request, $device) {
             $this->settings->assertRunning();
@@ -52,8 +52,12 @@ final class SyncServer
                 $accepted[] = $event['id'];
             }
             $rows = DB::table('sync_events')->where('sequence', '>', $request['cursor'])->whereNotNull('confirmed_at')->orderBy('sequence')->limit(100)->get();
-            $events = $rows->map(function ($row) {
+            $events = $rows->map(function ($row) use ($request) {
                 $row->payload = json_decode($row->payload, true, 512, JSON_THROW_ON_ERROR);
+                // Ältere Pi-Versionen akzeptieren die neue Quellenkennung noch nicht.
+                if ($row->entity === 'recipe' && ! ($request['api_ninjas_sources'] ?? false) && isset($row->payload['sources'])) {
+                    $row->payload['sources'] = array_values(array_filter($row->payload['sources'], fn ($source) => $source['provider'] !== 'api-ninjas'));
+                }
 
                 return (array) $row;
             })->all();

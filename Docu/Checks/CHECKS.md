@@ -303,3 +303,22 @@ Die SMB-Korrektur ist laut Nutzer nach Pi-Neustart erfolgreich bestätigt.
 Keine Installation oder vollständige Pi-Abnahme des gebündelten 1.1.1-Pakets,
 keine neue MariaDB-/Cyon-Abnahme, kein Git-Tag und keine Signatur. Die
 Produktionsfreigabe bleibt gesperrt; manuelles Anwendungspaket vorbereitet.
+
+## Version 1.2.0: API Ninjas, 9. Oktober 2026
+
+- PHP 8.3.30: vollständige SQLite-Suite erfolgreich, 141 Tests / 1029 Assertions;
+  zwei MariaDB-spezifische Tests mangels MariaDB übersprungen. Danach zwei
+  ergänzende Adapterregressionen aufgenommen: gesamter Adaptertest erfolgreich,
+  acht Tests / 29 Assertions. Anbieterantworten ausschliesslich simuliert.
+- Geprüft: Mengenabtrennung, Wiederholungsimport, Quellenmetadaten,
+  Cursor bei 429/ungültiger Antwort, Übergang von OpenDrinks, fehlender Key,
+  Abschluss des Importzyklus, Monatsgrenze/-wechsel und Pi-Zugriffssperre.
+- Sync-Regression für neue und ältere Clients besteht in der vollständigen Suite.
+- PHPStan Level 5 erfolgreich; optionale Turbo-Erweiterung mit statischem PHP
+  nicht verfügbar, Analyse läuft ohne sie. Projektweite Pint-Prüfung erfolgreich.
+- Ressourcenbuild und `git diff --check` erfolgreich.
+- Keine MariaDB-/Browser-/Cyon-/Pi-/Live-API-Abnahme für diesen Stand.
+  Keine Oberflächenänderung. API-Key und dauerhafte Nutzungsrechte nicht geprüft.
+- Produktionsbibliotheken für die manuellen Pakete aus 1.1.3 übernommen;
+  `composer.lock` vor Übernahme bytegleich geprüft. Keine Entwicklungsbibliotheken
+  oder privaten Laufzeitdaten in den Paketen. Produktionsfreigabe bleibt gesperrt.

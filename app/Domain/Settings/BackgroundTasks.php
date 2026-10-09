@@ -6,6 +6,7 @@ use App\Domain\Photos\PhotoCache;
 use App\Domain\Recipes\Importer;
 use App\Domain\Recipes\Translator;
 use App\Domain\Sync\SyncClient;
+use App\Infrastructure\Providers\ApiNinjas;
 use App\Infrastructure\Providers\OpenDrinks;
 use App\Infrastructure\Providers\TheCocktailDb;
 use Illuminate\Support\Carbon;
@@ -89,7 +90,17 @@ final class BackgroundTasks
             try {
                 $provider = $this->settings->get('import_provider', 'cocktaildb');
                 $cursor = $this->settings->get('import_cursor', '');
-                $batch = app($provider === 'cocktaildb' ? TheCocktailDb::class : OpenDrinks::class)->batch($cursor);
+                if ($provider === 'api-ninjas' && ! config('privatebar.api_ninjas_key')) {
+                    $batch = ['recipes' => [], 'cursor' => '', 'complete' => true];
+                } else {
+                    $adapter = match ($provider) {
+                        'cocktaildb' => TheCocktailDb::class,
+                        'opendrinks' => OpenDrinks::class,
+                        'api-ninjas' => ApiNinjas::class,
+                        default => throw new \RuntimeException('Unbekannte Rezeptquelle.'),
+                    };
+                    $batch = app($adapter)->batch($cursor);
+                }
                 foreach ($batch['recipes'] as $dto) {
                     app(Importer::class)->ingest($dto);
                 }
@@ -97,6 +108,9 @@ final class BackgroundTasks
                 if ($batch['complete']) {
                     if ($provider === 'cocktaildb') {
                         $this->settings->set('import_provider', 'opendrinks');
+                        $this->settings->set('import_cursor', '');
+                    } elseif ($provider === 'opendrinks' && config('privatebar.api_ninjas_key')) {
+                        $this->settings->set('import_provider', 'api-ninjas');
                         $this->settings->set('import_cursor', '');
                     } else {
                         $this->settings->set('import_pending', false);

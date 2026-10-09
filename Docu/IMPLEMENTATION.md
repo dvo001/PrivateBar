@@ -442,3 +442,29 @@ Dokument-Scrollbalken und dessen reservierten Platz aus und sperrt das Scrollen
 der darunterliegenden Seite. Das gilt für manuellen und automatischen Start.
 Beim Schliessen gelten automatisch wieder die normalen Scrollregeln.
 Ressourcen und manuelles Pi-Paket 1.1.2 aktualisiert; physische Pi-Prüfung offen.
+
+## API Ninjas: Version 1.2.0, 9. Oktober 2026
+
+Optionaler Cyon-Importadapter für gezielte Cocktail-Namenssuchen ergänzt
+TheCocktailDB und OpenDrinks. Eine Anfrage pro Batch, fortsetzbarer Cursor,
+stabile abgeleitete Quellenkennung, Mengenabtrennung und Original-/Lizenzdaten.
+Bestehender Importer übernimmt Deduplizierung und Übersetzungsschutz. API-Key
+bleibt in Cyon-.env. Eigener persistenter Monatszähler begrenzt auch Fehlversuche
+auf standardmässig 2800 der vom Benutzer genannten 3000 Calls. Ältere Pi-Clients
+erhalten Rezepte ohne die für sie unbekannte Quellenkennung, neue Clients
+erhalten alle Metadaten. Keine Migration oder Änderung des Sync-Schemas.
+Anleitung und fachliche Grenzen: [RELEASE-1.2.0.md](RELEASE-1.2.0.md).
+Keine Live-Abnahme, Bereitstellung, Signatur oder Produktionsfreigabe.
+
+Prüfstand: vollständige SQLite-Suite mit 141 Tests / 1029 Assertions erfolgreich
+(zwei MariaDB-Tests übersprungen), anschliessend alle acht Adaptertests mit
+29 Assertions erfolgreich inklusive zweier zusätzlicher Regressionen.
+PHPStan Level 5, Pint, Ressourcenbuild und Diff-Prüfung erfolgreich.
+Manuelle Cyon-/Pi-Prüfpakete und SHA-256 unter `artifacts/1.2.0/` vorbereitet.
+MariaDB-, Browser- und echte Zielsystemprüfungen bleiben offen.
+
+Die Releaseanleitung 1.2.0 verwendet gemäss `cyon-settings.md` den konkreten
+Cyon-Projektpfad `/home/silberf1/public_html/pbar/`. Jeder temporäre Cronjob
+und der reguläre Scheduler erzeugt ein Kontrolllog unter `storage/logs/`;
+Ausführungsstatus und Log sind vor dem nächsten Schritt zu kontrollieren.
+Die Anleitung in den manuellen Paketen ist entsprechend aktualisiert.
